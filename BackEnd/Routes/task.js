@@ -1,15 +1,29 @@
-//We import the express function
+// Importa a função express
 import express from "express";
+// Importa os controladores das tarefas
+import {
+  addTask,
+  deleteTask,
+  getTasks,
+  updateTask,
+} from "../Controllers/taskController.js";
 
-//Declaramos um router usando o express Router
+// Cria um novo router usando o express
 const router = express.Router();
 
-//Todos os paths aqui me baixo têm este path como base 'http://localhost:5173
-//Fazer uma destes para cada operação crud
-router.get("/", getAllDB);
-router.post();
-router.put();
-router.delete();
+// Define as rotas CRUD para tarefas
 
-//Exportamos o router para o apanharmos no ficheiro principal
+// Rota para obter todas as tarefas
+router.get("/", getTasks);
+
+// Rota para criar uma nova tarefa
+router.post("/create", addTask);
+
+// Rota para atualizar uma tarefa existente
+router.put("/update", updateTask);
+
+// Rota para deletar uma tarefa
+router.delete("/delete", deleteTask);
+
+// Exporta o router para ser usado no arquivo principal
 export default router;

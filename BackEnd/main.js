@@ -3,21 +3,67 @@ Como executar:
   -'npm start' no terminal;
 */
 
-//Importamos o express
+// Importa o framework Express para criar o servidor web
 import express from "express";
 
-//Criamos uma aplicação com o express
+// Importa função para conectar ao MongoDB
+import { mongoConnect } from "./util/Mongodb.js";
+
+// Importa o cliente do PostgreSQL
+import { Client } from "pg";
+
+// Importa dotenv para variáveis de ambiente
+import dotenv from "dotenv";
+
+// Importa os routers das diferentes funcionalidades
+import authenticationRouter from "./Routes/auth.js";
+import dashboardRouter from "./Routes/dashboard.js";
+import documentationRouter from "./Routes/docs.js";
+import managementRouter from "./Routes/management.js";
+import settingsRouter from "./Routes/settings.js";
+import spaceRouter from "./Routes/space.js";
+import tasksRouter from "./Routes/task.js";
+import usersRouter from "./Routes/users.js";
+
+// Carrega variáveis de ambiente do arquivo especificado
+dotenv.config({
+  override: true,
+  path: "./util/development.env",
+});
+
+// Cria uma aplicação Express
 const app = express();
 
-//Fazemos Parse de requests JSON, disponibilizando o seu conteudo no request.body de cada controller
+// Middleware para fazer parse de JSON nas requisições
 app.use(express.json());
 
-//Isto será para fazer as várias routes
-//app.use("/exemplo1", Router1);
-//app.use("/exemplo2", Router2);
-//app.use("/exemplo3", Router3);
-//app.use("/exemplo4", Router4);
+// Define as rotas da aplicação
+app.use("/auth", authenticationRouter); // Login, Registro, Recuperação de senha
+app.use("/dashboard", dashboardRouter); // Dashboard principal
+app.use("/docs", documentationRouter); // Documentação (Admin + User)
+app.use("/management", managementRouter); // Gerenciamento (apenas Admin)
+app.use("/setting", settingsRouter); // Configurações (User + Admin)
+app.use("/space", spaceRouter); // Espaços (Admin CRUD, User visualização)
+app.use("/tasks", tasksRouter); // Tarefas (User + Admin)
+app.use("/users", usersRouter); // Usuários (editar perfil, ver tarefas)
 
-app.listen(5173, () => {
-  console.log("SOUND TEST!");
+// Configura o cliente do PostgreSQL usando variáveis de ambiente
+const client = new Client({
+  user: process.env.USER,
+  host: process.env.HOST,
+  database: process.env.DATABASE,
+  password: String(process.env.PASSWORD),
+  port: Number(process.env.PORT),
+});
+
+// Conecta ao banco PostgreSQL, faz uma consulta de teste e encerra a conexão
+await client.connect();
+console.log("TESTE CRLH", await client.query("SELECT NOW()"));
+await client.end();
+
+// Conecta ao MongoDB e inicia o servidor Express na porta 5173
+mongoConnect(() => {
+  app.listen(5173, () => {
+    console.log("SOUND TEST!");
+  });
 });
