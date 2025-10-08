@@ -3,6 +3,8 @@ Como executar:
   -'npm start' no terminal;
 */
 
+import bodyParser from "body-parser";
+
 // Importa o framework Express para criar o servidor web
 import express from "express";
 
@@ -37,6 +39,11 @@ const app = express();
 // Middleware para fazer parse de JSON nas requisições
 app.use(express.json());
 
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 // Define as rotas da aplicação
 app.use("/auth", authenticationRouter); // Login, Registro, Recuperação de senha
 app.use("/dashboard", dashboardRouter); // Dashboard principal
@@ -48,7 +55,7 @@ app.use("/tasks", tasksRouter); // Tarefas (User + Admin)
 app.use("/users", usersRouter); // Usuários (editar perfil, ver tarefas)
 
 // Configura o cliente do PostgreSQL usando variáveis de ambiente
-const client = new Client({
+export const client = new Client({
   user: process.env.USER,
   host: process.env.HOST,
   database: process.env.DATABASE,
@@ -58,8 +65,7 @@ const client = new Client({
 
 // Conecta ao banco PostgreSQL, faz uma consulta de teste e encerra a conexão
 await client.connect();
-console.log("TESTE CRLH", await client.query("SELECT NOW()"));
-await client.end();
+//await client.end();
 
 // Conecta ao MongoDB e inicia o servidor Express na porta 5173
 mongoConnect(() => {
