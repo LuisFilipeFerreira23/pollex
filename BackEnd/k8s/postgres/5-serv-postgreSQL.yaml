@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-service
+  labels:
+    app: postgresql
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  clusterIP: None  # This ensures that each pod has its own stable DNS entry (for StatefulSets)
+  selector:
+    app: postgresql

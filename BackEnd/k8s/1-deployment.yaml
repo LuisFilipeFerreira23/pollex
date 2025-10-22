@@ -20,3 +20,16 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 5173
+          env:
+            - name: DB_HOST
+              value: "postgresql-service"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "postgres"
+            - name: DB_PASSWORD
+              value: "123456789"
+            - name: DB_NAME
+              value: "Test1"
+            - name: DATABASE_URL
+              value: "postgresql://postgres:123456789@postgresql-service:5432/Test1"

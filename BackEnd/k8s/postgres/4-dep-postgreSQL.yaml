@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  labels:
+    app: postgresql
+spec:
+  serviceName: "postgresql"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:15
+          env:
+            - name: POSTGRES_USER
+              value: "postgres" # Specify a username for the DB
+            - name: POSTGRES_PASSWORD
+              value: "123456789" # Specify a password for the DB
+            - name: POSTGRES_DB
+              value: "Test1" # Specify a database name
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgresql-data
+              mountPath: /var/lib/postgresql/data # Mount the volume to the PostgreSQL data directory
+      volumes:
+        - name: postgresql-data
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
