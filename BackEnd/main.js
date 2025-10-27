@@ -79,9 +79,18 @@ if (pgClient) {
   console.error("Falha ao conectar ao PostgreSQL.");
 }
 //await client.end();
+//For Localhost
+/* 
 app.listen(5173, () => {
   console.log("SOUND TEST!");
 });
+*/
+
+//For External Access
+app.listen(5173, "0.0.0.0", () => {
+  console.log("SOUND TEST! Listening on port 5173");
+});
+
 // Conecta ao MongoDB e inicia o servidor Express na porta 5173
 mongoConnect(() => {
   console.log("Conexão com o MongoDB estabelecida com sucesso!");
