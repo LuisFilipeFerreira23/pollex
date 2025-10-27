@@ -45,6 +45,9 @@ app.use(
   })
 );
 // Define as rotas da aplicação
+app.use("/", (req, res) => {
+  res.render("home");
+});
 app.use("/auth", authenticationRouter); // Login, Registro, Recuperação de senha
 app.use("/dashboard", dashboardRouter); // Dashboard principal
 app.use("/docs", documentationRouter); // Documentação (Admin + User)
