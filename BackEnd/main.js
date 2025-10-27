@@ -26,11 +26,16 @@ import settingsRouter from "./Routes/settings.js";
 import spaceRouter from "./Routes/space.js";
 import tasksRouter from "./Routes/task.js";
 import usersRouter from "./Routes/users.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Carrega variáveis de ambiente do arquivo especificado
 dotenv.config({
   override: true,
-  path: "./util/development.env",
+  path: "./util/development-2.env",
 });
 
 // Cria uma aplicação Express
@@ -45,8 +50,8 @@ app.use(
   })
 );
 // Define as rotas da aplicação
-app.use("/", (req, res) => {
-  res.render("home");
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "home.html"));
 });
 app.use("/auth", authenticationRouter); // Login, Registro, Recuperação de senha
 app.use("/dashboard", dashboardRouter); // Dashboard principal
@@ -67,12 +72,17 @@ export const client = new Client({
 });
 
 // Conecta ao banco PostgreSQL, faz uma consulta de teste e encerra a conexão
-await client.connect();
+const pgClient = await client.connect();
+if (pgClient) {
+  console.log("Conexão com o PostgreSQL estabelecida com sucesso!");
+} else {
+  console.error("Falha ao conectar ao PostgreSQL.");
+}
 //await client.end();
-
+app.listen(5173, () => {
+  console.log("SOUND TEST!");
+});
 // Conecta ao MongoDB e inicia o servidor Express na porta 5173
 mongoConnect(() => {
-  app.listen(5173, () => {
-    console.log("SOUND TEST!");
-  });
+  console.log("Conexão com o MongoDB estabelecida com sucesso!");
 });
