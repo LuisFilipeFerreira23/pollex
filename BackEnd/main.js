@@ -35,7 +35,7 @@ const __dirname = path.dirname(__filename);
 // Carrega variáveis de ambiente do arquivo especificado
 dotenv.config({
   override: true,
-  path: "./util/development-2.env",
+  path: "./util/development.env", //Alterar o ficheiro para 2 se for para testes locais
 });
 
 // Cria uma aplicação Express

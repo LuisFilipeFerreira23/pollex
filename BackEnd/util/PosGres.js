@@ -4,7 +4,7 @@ import path from "path";
 //Get the development variables on the .env file
 require("dotenv").config({
   override: true,
-  path: path.join(__dirname, "development-2.env"),
+  path: path.join(__dirname, "development-2.env"), //Alterar o ficheiro para 2 se for para testes locais
 });
 
 const client = new Client({
