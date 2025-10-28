@@ -22,7 +22,7 @@ spec:
             - name: POSTGRES_USER
               value: "postgres" # Specify a username for the DB
             - name: POSTGRES_PASSWORD
-              value: "123456789" # Specify a password for the DB
+              value: "1234567890" # Specify a password for the DB
             - name: POSTGRES_DB
               value: "Test1" # Specify a database name
           ports:
