@@ -17,14 +17,14 @@ spec:
     spec:
       containers:
         - name: postgresql
-          image: postgres:15
+          image: postgres:16
           env:
             - name: POSTGRES_USER
               value: "postgres" # Specify a username for the DB
             - name: POSTGRES_PASSWORD
-              value: "123456789" # Specify a password for the DB
+              value: "postgres" # Specify a password for the DB
             - name: POSTGRES_DB
-              value: "Test1" # Specify a database name
+              value: "pop" # Specify a database name
           ports:
             - containerPort: 5432
           volumeMounts:

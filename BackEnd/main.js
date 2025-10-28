@@ -64,11 +64,11 @@ app.use("/users", usersRouter); // Usuários (editar perfil, ver tarefas)
 
 // Configura o cliente do PostgreSQL usando variáveis de ambiente
 export const client = new Client({
-  user: process.env.USER,
-  host: process.env.HOST,
-  database: process.env.DATABASE,
-  password: String(process.env.PASSWORD),
-  port: Number(process.env.PORT),
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  password: String(process.env.DB_PASSWORD),
+  port: Number(process.env.DB_PORT),
 });
 
 // Conecta ao banco PostgreSQL, faz uma consulta de teste e encerra a conexão
