@@ -5,7 +5,7 @@ metadata:
   labels:
     app: scc
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: scc
@@ -16,20 +16,18 @@ spec:
     spec:
       containers:
         - name: scc
-          image: luisferreira23/test:latest
-          imagePullPolicy: Always
+          image: docker.io/tiagopaulorocha:latest321
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5173
           env:
             - name: DB_HOST
-              value: "postgresql-service"
+              value: "postgres"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
               value: "postgres"
             - name: DB_PASSWORD
-              value: "1234567890"
+              value: "postgres"
             - name: DB_NAME
-              value: "Test1"
-            - name: DATABASE_URL
-              value: "postgresql://postgres:1234567890@postgresql-service:5432/Test1"
+              value: "pop"
