@@ -22,9 +22,9 @@ spec:
             - name: POSTGRES_USER
               value: "postgres" # Specify a username for the DB
             - name: POSTGRES_PASSWORD
-              value: "postgres" # Specify a password for the DB
+              value: "123456789" # Specify a password for the DB
             - name: POSTGRES_DB
-              value: "pop" # Specify a database name
+              value: "Test1" # Specify a database name
           ports:
             - containerPort: 5432
           volumeMounts:
