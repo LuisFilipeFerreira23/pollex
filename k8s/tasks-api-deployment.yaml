@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: pollex-api
-          image: pollex-api:latest
+          image: luisferreira23/pollex:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5173  # replace with your app port if different

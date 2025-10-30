@@ -1,7 +1,7 @@
-import { client } from "../main.js";
+import { Pool } from "pg";
 
 export function initialTesting(req, res, next) {
-  client.query("SELECT * FROM public.space LIMIT 500", (error, results) => {
+  Pool.query("SELECT * FROM public.space LIMIT 500", (error, results) => {
     if (error) {
       throw error;
     }
