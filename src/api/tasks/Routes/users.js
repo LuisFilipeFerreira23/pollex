@@ -2,10 +2,17 @@
 import express from "express";
 
 // Importa os controladores para visualizar informações do usuário e tarefas
-import { viewUserInfo, viewUserTasks } from "../Controllers/usersController.js";
+import {
+  initialTesting,
+  viewUserInfo,
+  viewUserTasks,
+} from "../Controllers/usersController.js";
 
 // Cria um router usando o express Router
 const router = express.Router();
+
+//Just for initial tests
+router.get("/", initialTesting);
 
 // Define as rotas baseadas em 'http://localhost:5173'
 // Rota para obter informações do usuário

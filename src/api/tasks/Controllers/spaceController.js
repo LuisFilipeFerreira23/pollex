@@ -1,3 +1,17 @@
+import { client } from "../main.js";
+
+export function initialTesting(req, res, next) {
+  client.query("SELECT * FROM public.space LIMIT 500", (error, results) => {
+    if (error) {
+      throw error;
+    }
+
+    if (!res) {
+      console.log("Error!!!");
+    }
+    res.status(200).json(results.rows);
+  });
+}
 export function getSpace() {
   console.log(123);
 }

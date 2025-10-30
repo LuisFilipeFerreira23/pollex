@@ -3,6 +3,7 @@ import express from "express";
 
 // Importa as funções de controle de autenticação
 import {
+  initialTesting,
   login,
   register,
   passwordRecovery,
@@ -10,6 +11,8 @@ import {
 
 // Cria um novo router usando o express
 const router = express.Router();
+
+router.get("/", initialTesting);
 
 // Define as rotas de autenticação
 // Rota para login
