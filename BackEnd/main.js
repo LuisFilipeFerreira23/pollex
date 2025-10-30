@@ -35,7 +35,7 @@ const __dirname = path.dirname(__filename);
 // Carrega variáveis de ambiente do arquivo especificado
 dotenv.config({
   override: true,
-  path: "./util/development.env", //Alterar o ficheiro para 2 se for para testes locais
+  path: "./util/development-2.env", //Alterar o ficheiro para 2 se for para testes locais
 });
 
 // Cria uma aplicação Express
@@ -71,12 +71,13 @@ export const client = new Client({
   port: Number(process.env.DB_PORT),
 });
 
+let pgClient;
 // Conecta ao banco PostgreSQL, faz uma consulta de teste e encerra a conexão
-const pgClient = await client.connect();
-if (pgClient) {
-  console.log("Conexão com o PostgreSQL estabelecida com sucesso!");
-} else {
-  console.error("Falha ao conectar ao PostgreSQL.");
+try {
+  pgClient = await client.connect();
+  console.log("PostGresSQL Successfully connected!");
+} catch (error) {
+  console.error("Error connecting to Postgres:", error);
 }
 //await client.end();
 //For Localhost
@@ -93,5 +94,5 @@ app.listen(5173, "0.0.0.0", () => {
 
 // Conecta ao MongoDB e inicia o servidor Express na porta 5173
 mongoConnect(() => {
-  console.log("Conexão com o MongoDB estabelecida com sucesso!");
+  console.log("MongoDB connection established successfully!");
 });

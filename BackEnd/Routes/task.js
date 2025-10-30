@@ -17,13 +17,13 @@ const router = express.Router();
 router.get("/", getTasks);
 
 // Rota para criar uma nova tarefa
-router.post("/create", addTask);
+router.post("/create/", addTask);
 
 // Rota para atualizar uma tarefa existente
-router.put("/update", updateTask);
+router.get("/update/:id", updateTask);
 
 // Rota para deletar uma tarefa
-router.delete("/delete", deleteTask);
+router.get("/delete/:id", deleteTask);
 
 // Exporta o router para ser usado no arquivo principal
 export default router;
