@@ -1,15 +1,6 @@
-/* 
-Como executar:
-  -'npm start' no terminal;
-*/
 import bodyParser from "body-parser";
-
-// Importa o framework Express para criar o servidor web
 import express from "express";
-
-// Importa dotenv para variáveis de ambiente
 import dotenv from "dotenv";
-
 import db from "./dbmanager.js";
 
 // Importa os routers das diferentes funcionalidades

@@ -20,14 +20,14 @@ async function createTables() {
     );
   `);
 
+  // --CHECK IF IT WORKS
   // print tables
-  const result = await pool.query(`
+  console.log(
+    await pool.query(`
     SELECT table_name 
     FROM information_schema.tables 
     WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
-  `);
-
-  console.log(result.rows);
+  `));
 }
 
 export default { pool, createTables };
