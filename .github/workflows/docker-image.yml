@@ -34,5 +34,5 @@ jobs:
           context: ./src/api/tasks/
           file: ./docker/dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }},luisferreira23/pollex:latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
