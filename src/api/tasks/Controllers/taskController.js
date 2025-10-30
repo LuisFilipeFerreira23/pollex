@@ -1,7 +1,8 @@
 /* CRUD PARA TAREFAS */
-import { client } from "../main.js";
+import { Pool } from "pg";
+
 export function getTasks(req, res, next) {
-  client.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
+  Pool.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
     if (error) {
       throw error;
     }
@@ -14,7 +15,7 @@ export function getTasks(req, res, next) {
 }
 
 export function addTask(req, res, next) {
-  client.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
+  Pool.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
     if (error) {
       throw error;
     }
@@ -28,7 +29,7 @@ export function addTask(req, res, next) {
 
 export function updateTask(req, res, next) {
   const { id } = req.params;
-  client.query(
+  Pool.query(
     "SELECT * FROM public.task WHERE id = $1",
     [id],
     (error, results) => {
@@ -40,7 +41,7 @@ export function updateTask(req, res, next) {
         console.log("Error!!!");
       } else {
         const newDate = new Date();
-        client.query(
+        Pool.query(
           "UPDATE public.task SET updated_at = $1 WHERE id = $2",
           [newDate, id],
           (error, results) => {
@@ -58,7 +59,7 @@ export function updateTask(req, res, next) {
 
 export function deleteTask(req, res, next) {
   const { id } = req.params;
-  client.query(
+  Pool.query(
     "DELETE FROM public.task WHERE id = $1",
     [id],
     (error, results) => {

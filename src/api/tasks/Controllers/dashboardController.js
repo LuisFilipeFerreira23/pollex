@@ -1,3 +1,5 @@
+import { Pool } from "pg";
+
 /* CRUDS */
 
 export function getDashboard(request, response, next) {
@@ -5,7 +7,7 @@ export function getDashboard(request, response, next) {
 }
 
 export function deleteDashboard(request, response, next) {
-  client.query("DELETE FROM public.tickets WHERE id = 2", (error, results) => {
+  Pool.query("DELETE FROM public.tickets WHERE id = 2", (error, results) => {
     if (error) {
       throw error;
     }
