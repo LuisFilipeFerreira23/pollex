@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pollex-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pollex-api
+  template:
+    metadata:
+      labels:
+        app: pollex-api
+    spec:
+      containers:
+        - name: pollex-api
+          image: pollex-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5173  # replace with your app port if different
+          env:
+            - name: POSTGRES_HOSTNAME
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DATABASE
+              value: Test1
+            - name: API_PORT
+              value: "5173"
+            - name: TZ
+              value: UTC
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pollex-api
+spec:
+  type: NodePort
+  selector:
+    app: pollex-api
+  ports:
+    - port: 5173  # port your app runs on
+      nodePort: 30080  # external port accessible on localhost:30080

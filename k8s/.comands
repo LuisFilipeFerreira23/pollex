@@ -1,0 +1,35 @@
+-- build docker image
+docker compose up
+-- rebuild it 
+docker compose up --build
+
+minikube delete
+minikube start
+
+minikube image load pollex-api
+
+kubectl apply -f pg-claim.yaml
+kubectl apply -f pg-deployment.yaml
+kubectl apply -f pg-service.yaml
+
+-- port forward to access DB
+kubectl port-forward svc/pollex-postgres 5432:5432
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+-- check status
+kubectl get pods
+kubectl get services
+kubectl describe pod <name>
+--OLD--
+
+
+--WORKING
+minikube start
+minikube image load pollex-api
+kubectl apply -f ./k8s/postgres-deployment.yaml 
+kubectl apply -f ./k8s/tasks-api-deployment.yaml
+
+--Para Linux é necessário manter aberto
+minikube service pollex-api --url
