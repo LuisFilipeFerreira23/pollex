@@ -15,4 +15,7 @@ minikube service pollex-api --url
 
 -- PARA IR BUSCAR A IMAGEM AO REPOSITÓRIO (DOCKER HUB) E CARREGÁ-LA NO MINIKUBE
 minikube start
-minikube
+kubectl apply -f ./k8s/postgres-deployment.yaml 
+kubectl apply -f ./k8s/tasks-api-deployment.yaml
+--Para Linux é necessário manter aberto
+minikube service pollex-api --url
