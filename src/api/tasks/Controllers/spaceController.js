@@ -1,4 +1,4 @@
-import db from "../dbmanager";
+import db from "../dbmanager.js";
 
 export function initialTesting(req, res, next) {
   db.pool.query("SELECT * FROM public.space LIMIT 500", (error, results) => {

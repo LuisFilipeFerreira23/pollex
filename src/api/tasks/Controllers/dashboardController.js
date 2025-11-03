@@ -1,5 +1,5 @@
 /* CRUDS */
-import db from "../dbmanager";
+import db from "../dbmanager.js";
 
 export function getDashboard(request, response, next) {
   response.status(200).json("Dashboard route is working!");

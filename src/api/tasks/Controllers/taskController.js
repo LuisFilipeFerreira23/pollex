@@ -1,8 +1,8 @@
 /* CRUD PARA TAREFAS */
-import db from "../dbmanager";
+import db from "../dbmanager.js";
 
 export function getTasks(req, res, next) {
-  db.pool.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
+  db.pool.query("SELECT * FROM public.tasks LIMIT 500", (error, results) => {
     if (error) {
       throw error;
     }
@@ -15,7 +15,7 @@ export function getTasks(req, res, next) {
 }
 
 export function addTask(req, res, next) {
-  db.pool.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
+  db.pool.query("SELECT * FROM public.tasks LIMIT 500", (error, results) => {
     if (error) {
       throw error;
     }

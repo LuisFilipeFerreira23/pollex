@@ -22,7 +22,7 @@ services:
       timeout: 5s
       retries: 5
   api:
-    image: ${DOCKER_REGISTRY-}/pollex:latest
+    image: ${DOCKER_REGISTRY}/pollex-api:latest
     container_name: pollex-api
     hostname: pollex-api
     restart: unless-stopped
