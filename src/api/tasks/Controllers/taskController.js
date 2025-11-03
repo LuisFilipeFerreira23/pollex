@@ -1,35 +1,42 @@
 /* CRUD PARA TAREFAS */
 import { Pool } from "pg";
+import dbmanager from "../dbmanager";
 
 export function getTasks(req, res, next) {
-  Pool.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
-    if (error) {
-      throw error;
-    }
+  dbmanager.pool.query(
+    "SELECT * FROM public.task LIMIT 500",
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
 
-    if (!res) {
-      console.log("Error!!!");
+      if (!res) {
+        console.log("Error!!!");
+      }
+      res.status(200).json(results.rows);
     }
-    res.status(200).json(results.rows);
-  });
+  );
 }
 
 export function addTask(req, res, next) {
-  Pool.query("SELECT * FROM public.task LIMIT 500", (error, results) => {
-    if (error) {
-      throw error;
-    }
+  dbmanager.pool.query(
+    "SELECT * FROM public.task LIMIT 500",
+    (error, results) => {
+      if (error) {
+        throw error;
+      }
 
-    if (!res) {
-      console.log("Error!!!");
+      if (!res) {
+        console.log("Error!!!");
+      }
+      res.status(200).json(results.rows);
     }
-    res.status(200).json(results.rows);
-  });
+  );
 }
 
 export function updateTask(req, res, next) {
   const { id } = req.params;
-  Pool.query(
+  dbmanager.pool.query(
     "SELECT * FROM public.task WHERE id = $1",
     [id],
     (error, results) => {
@@ -59,7 +66,7 @@ export function updateTask(req, res, next) {
 
 export function deleteTask(req, res, next) {
   const { id } = req.params;
-  Pool.query(
+  dbmanager.pool.query(
     "DELETE FROM public.task WHERE id = $1",
     [id],
     (error, results) => {
