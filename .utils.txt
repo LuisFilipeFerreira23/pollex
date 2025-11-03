@@ -1,9 +1,9 @@
--- PARA USO LOCAL (CRIAR IMAGE ATRAVÉS DO DIR DO DOCKERFILE E COLOCÁ-LO MANUALMENTE COMO UMA IMAGEM DO DOCKER DESKTOP) --
+-- PARA USO LOCAL (CRIAR IMAGE ATRAVÉS DO DIR /pollex E COLOCÁ-LO MANUALMENTE COMO UMA IMAGEM DO DOCKER DESKTOP)
 
 -- build docker image
-docker compose up
--- rebuild it 
-docker compose up --build
+docker compose -f docker/dev/compose.yaml up
+-- rebuild it
+docker compose -f docker/dev/compose.yaml up --build
 
 -- PARA CARREGAR A IMAGE DO DOCKER DESKTOP PARA O MINIKUBE
 minikube start
