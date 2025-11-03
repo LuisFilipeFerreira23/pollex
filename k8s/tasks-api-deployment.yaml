@@ -15,9 +15,9 @@ spec:
       containers:
         - name: pollex-api
           image: luisferreira23/pollex:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
-            - containerPort: 5173  # replace with your app port if different
+            - containerPort: 5173 # replace with your app port if different
           env:
             - name: POSTGRES_HOSTNAME
               value: postgres
@@ -44,5 +44,5 @@ spec:
   selector:
     app: pollex-api
   ports:
-    - port: 5173  # port your app runs on
-      nodePort: 30080  # external port accessible on localhost:30080
+    - port: 5173 # port your app runs on
+      nodePort: 30080 # external port accessible on localhost:30080

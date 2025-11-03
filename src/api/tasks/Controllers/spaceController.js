@@ -1,20 +1,16 @@
-import { Pool } from "pg";
-import dbmanager from "../dbmanager";
+import db from "../dbmanager";
 
 export function initialTesting(req, res, next) {
-  dbmanager.pool.query(
-    "SELECT * FROM public.space LIMIT 500",
-    (error, results) => {
-      if (error) {
-        throw error;
-      }
-
-      if (!res) {
-        console.log("Error!!!");
-      }
-      res.status(200).json(results.rows);
+  db.pool.query("SELECT * FROM public.space LIMIT 500", (error, results) => {
+    if (error) {
+      throw error;
     }
-  );
+
+    if (!res) {
+      console.log("Error!!!");
+    }
+    res.status(200).json(results.rows);
+  });
 }
 
 export function getSpace() {
