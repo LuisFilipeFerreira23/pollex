@@ -2,16 +2,36 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Publish Docker image
+name: Publish Pollex API image on New Release
 
 on:
+  push:
+    branches:
+      - main
   release:
     types: [published]
 
 jobs:
-  push_to_registry:
+  test_on_push:
+    name: Run Tests on Push to Main
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+
+  push_to_registry_on_release:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs: test_on_push
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -36,11 +56,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      # - name: Build and push Postgres image
-      #   uses: docker/build-push-action@v3
-      #   with:
-      #    context: ./path/to/postgres/custom
-      #    file: ./docker/Dockerfile-postgres
-      #    push: true
-      #    tags: luisferreira23/pollex-postgres:latest
