@@ -4,6 +4,8 @@ services:
     container_name: pollex-postgres
     hostname: pollex-postgres
     restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT}:5432"
     expose:
       - "${POSTGRES_PORT}"
     environment:
@@ -22,7 +24,7 @@ services:
       timeout: 5s
       retries: 5
   api:
-    image: ${DOCKER_REGISTRY}/pollex-api:latest
+    image: ${DOCKER_REGISTRY}/pollex-api:dev
     container_name: pollex-api
     hostname: pollex-api
     restart: unless-stopped

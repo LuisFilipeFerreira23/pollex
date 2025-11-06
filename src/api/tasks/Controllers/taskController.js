@@ -15,17 +15,39 @@ export function getTasks(req, res, next) {
 }
 
 export function addTask(req, res, next) {
-  db.pool.query("SELECT * FROM public.tasks LIMIT 500", (error, results) => {
-    if (error) {
-      throw error;
-    }
+  const { space_id, title, status, priority, assigned_to, created_by, due_date, estimated_hours } = req.body;
 
-    if (!res) {
-      console.log("Error!!!");
+  const insertQuery = `
+    INSERT INTO public.tasks
+      (space_id, title, status, priority, assigned_to, created_by, due_date, estimated_hours)
+    VALUES
+      ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING *;
+  `;
+
+  const values = [ space_id, title, status, priority || null, assigned_to || null, created_by, due_date || null, estimated_hours || null ];
+  
+  db.pool.query(insertQuery, values, (error, results) => {
+    if (error) {
+      next(error); // Pass error to Express error handler middleware
+      return;
     }
-    res.status(200).json(results.rows);
-  });
+    res.status(201).json(results.rows[0]); // Return inserted task record
+   });
 }
+    
+// export function addTask(req, res, next) {
+//   db.pool.query("SELECT * FROM public.tasks LIMIT 500", (error, results) => {
+//     if (error) {
+//       throw error;
+//     }
+
+//     if (!res) {
+//       console.log("Error!!!");
+//     }
+//     res.status(200).json(results.rows);
+//   });
+// }
 
 export function updateTask(req, res, next) {
   const { id } = req.params;

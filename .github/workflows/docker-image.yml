@@ -28,7 +28,7 @@ jobs:
         with:
           images: luisferreira23/pollex
 
-      - name: Build and push Docker image
+      - name: Build and push Api image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: ./src/api/tasks/
@@ -36,3 +36,11 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Build and push Postgres image
+        uses: docker/build-push-action@v3
+        with:
+         context: ./path/to/postgres/custom
+         file: ./docker/Dockerfile-postgres
+         push: true
+         tags: luisferreira23/pollex-postgres:latest
