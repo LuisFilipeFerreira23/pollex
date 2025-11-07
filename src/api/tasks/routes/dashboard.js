@@ -5,7 +5,7 @@ import express from "express";
 import {
   getDashboard,
   deleteDashboard,
-} from "../Controllers/dashboardController.js";
+} from "../controllers/dashboardController.js";
 
 // Cria uma instância do router usando express.Router()
 const router = express.Router();

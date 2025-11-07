@@ -2,7 +2,7 @@
 import express from "express";
 
 // Importa as funções getDocs e deleteDocs do controller de documentos
-import { getDocs, deleteDocs } from "../Controllers/docsController.js";
+import { getDocs, deleteDocs } from "../controllers/docsController.js";
 
 // Cria uma instância do router do express
 const router = express.Router();

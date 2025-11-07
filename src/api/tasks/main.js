@@ -4,14 +4,14 @@ import dotenv from "dotenv";
 import db from "./dbmanager.js";
 
 // Importa os routers das diferentes funcionalidades
-import authenticationRouter from "./Routes/auth.js";
-import dashboardRouter from "./Routes/dashboard.js";
-import documentationRouter from "./Routes/docs.js";
-import managementRouter from "./Routes/management.js";
-import settingsRouter from "./Routes/settings.js";
-import spaceRouter from "./Routes/space.js";
-import tasksRouter from "./Routes/task.js";
-import usersRouter from "./Routes/users.js";
+import authenticationRouter from "./routes/auth.js";
+import dashboardRouter from "./routes/dashboard.js";
+import documentationRouter from "./routes/docs.js";
+import managementRouter from "./routes/management.js";
+import settingsRouter from "./routes/settings.js";
+import spaceRouter from "./routes/space.js";
+import tasksRouter from "./routes/task.js";
+import usersRouter from "./routes/users.js";
 
 // Carrega variáveis de ambiente do arquivo especificado
 dotenv.config();
@@ -31,8 +31,10 @@ app.use("/space", spaceRouter);
 app.use("/tasks", tasksRouter);
 app.use("/users", usersRouter);
 
-// Create database tables if not exists
-await db.createTables();
+// Inicia a aplicação após garantir a conexão com o banco de dados
+await db.authenticationCheck();
+await db.createDatabase();
+await db.syncModels();
 
 //For External Access
 app.listen(Number(process.env.API_PORT), "0.0.0.0", () => {

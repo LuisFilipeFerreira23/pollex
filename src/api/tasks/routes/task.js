@@ -6,7 +6,7 @@ import {
   deleteTask,
   getTasks,
   updateTask,
-} from "../Controllers/taskController.js";
+} from "../controllers/taskController.js";
 
 // Cria um novo router usando o express
 const router = express.Router();
@@ -20,10 +20,10 @@ router.get("/", getTasks);
 router.post("/create/", addTask);
 
 // Rota para atualizar uma tarefa existente
-router.get("/update/:id", updateTask);
+router.put("/update/:id", updateTask);
 
 // Rota para deletar uma tarefa
-router.get("/delete/:id", deleteTask);
+router.delete("/delete/:id", deleteTask);
 
 // Exporta o router para ser usado no arquivo principal
 export default router;

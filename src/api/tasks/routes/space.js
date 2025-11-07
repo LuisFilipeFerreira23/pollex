@@ -12,7 +12,7 @@ import {
   getList,
   updateKanban,
   updateSpace,
-} from "../Controllers/spaceController.js";
+} from "../controllers/spaceController.js";
 
 // Cria um novo router usando o express
 const router = express.Router();

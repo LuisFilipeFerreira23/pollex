@@ -7,7 +7,7 @@ import {
   login,
   register,
   passwordRecovery,
-} from "../Controllers/authController.js";
+} from "../controllers/authController.js";
 
 // Cria um novo router usando o express
 const router = express.Router();

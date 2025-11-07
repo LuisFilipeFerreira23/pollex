@@ -6,7 +6,7 @@ import {
   initialTesting,
   viewUserInfo,
   viewUserTasks,
-} from "../Controllers/usersController.js";
+} from "../controllers/usersController.js";
 
 // Cria um router usando o express Router
 const router = express.Router();

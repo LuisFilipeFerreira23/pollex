@@ -2,7 +2,7 @@
 import express from "express";
 
 // Importa a função getManagement do controller correspondente
-import { getManagement } from "../Controllers/managementController.js";
+import { getManagement } from "../controllers/managementController.js";
 
 // Cria um novo router usando o express.Router
 const router = express.Router();

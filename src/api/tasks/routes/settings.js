@@ -6,7 +6,7 @@ import {
   getSettings,
   deleteSettings,
   editSettings,
-} from "../Controllers/settingsController.js";
+} from "../controllers/settingsController.js";
 
 // Cria um router usando o express Router
 const router = express.Router();

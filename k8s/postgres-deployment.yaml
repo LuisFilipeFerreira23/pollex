@@ -35,7 +35,7 @@ spec:
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_DB
-              value: Test1
+              value: pollex-tasks
             - name: TZ
               value: UTC
           ports:
