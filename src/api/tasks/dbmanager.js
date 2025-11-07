@@ -9,21 +9,6 @@ const pool = new Pool({
   database: process.env.POSTGRES_DATABASE,
 });
 
-async function createDatabase() {
-  try {
-    await pool.connect();
-    await pool.query('CREATE DATABASE "pollex-tasks"');
-    console.log("Database created successfully");
-  } catch (err) {
-    if (err.code === "42P04") {
-      // duplicate_database error
-      console.log("Database already exists");
-    } else {
-      console.error("Error creating database:", err);
-    }
-  }
-}
-
 //SEQUELIZE
 import { Sequelize, DataTypes } from "sequelize";
 import defineTask from "./models/task.js";
@@ -53,7 +38,6 @@ async function syncModels() {
 
 //Exports
 export default {
-  createDatabase,
   authenticationCheck,
   syncModels,
 };

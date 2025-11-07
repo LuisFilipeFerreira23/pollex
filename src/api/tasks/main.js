@@ -33,7 +33,6 @@ app.use("/users", usersRouter);
 
 // Inicia a aplicação após garantir a conexão com o banco de dados
 await db.authenticationCheck();
-await db.createDatabase();
 await db.syncModels();
 
 //For External Access
