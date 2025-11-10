@@ -4,9 +4,9 @@ export default function defineTask(sequelize, DataTypes) {
     title: DataTypes.STRING,
     description: DataTypes.STRING,
     status: DataTypes.STRING,
-    due_date: DataTypes.DATE,
-    documentation_Id: DataTypes.INTEGER,
-    create_at: DataTypes.DATE,
-    update_at: DataTypes.DATE,
+    dueDate: DataTypes.DATE,
+    documentationId: DataTypes.INTEGER,
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE,
   });
 }

@@ -20,12 +20,12 @@ export async function getTaskById(req, res, next) {
 }
 
 export async function addTask(req, res, next) {
+  const { name } = req.body;
   try {
-    const { name } = req.body; // validate as needed
-    const results = await Task.create({ name }); // capture the result
-    return res.status(201).json({ results }); // send response
+    const results = await Task.create({ name });
+    return res.status(201).json({ results });
   } catch (error) {
-    return next(error); // forward to error middleware
+    return next(error);
   }
 }
 

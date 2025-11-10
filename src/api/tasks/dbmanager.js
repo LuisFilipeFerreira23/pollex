@@ -19,7 +19,7 @@ import defineDoc from "./models/doc.js";
 
 //Connection URL
 const sequelize = new Sequelize(
-  "postgres://postgres:postgres@pollex-postgres:5432/pollex-tasks"
+  "postgres://postgres:1234@pollex-postgres:5432/pollex-tasks"
 );
 
 async function authenticationCheck() {
