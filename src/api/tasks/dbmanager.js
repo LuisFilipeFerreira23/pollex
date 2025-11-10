@@ -12,6 +12,10 @@ const pool = new Pool({
 //SEQUELIZE
 import { Sequelize, DataTypes } from "sequelize";
 import defineTask from "./models/task.js";
+import defineNotification from "./models/notification.js";
+import defineSpace from "./models/space.js";
+import defineUser from "./models/user.js";
+import defineDoc from "./models/doc.js";
 
 //Connection URL
 const sequelize = new Sequelize(
@@ -28,7 +32,11 @@ async function authenticationCheck() {
 }
 
 //Define Models
+const Notification = defineNotification(sequelize, DataTypes);
+const Space = defineSpace(sequelize, DataTypes);
 const Task = defineTask(sequelize, DataTypes);
+const User = defineUser(sequelize, DataTypes);
+const Doc = defineDoc(sequelize, DataTypes);
 
 // Sync Models
 async function syncModels() {
@@ -38,6 +46,9 @@ async function syncModels() {
 
 //Exports
 export default {
+  pool,
   authenticationCheck,
   syncModels,
+  defineTask,
+  Task,
 };

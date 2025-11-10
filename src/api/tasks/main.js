@@ -31,7 +31,7 @@ app.use("/space", spaceRouter);
 app.use("/tasks", tasksRouter);
 app.use("/users", usersRouter);
 
-// Inicia a aplicação após garantir a conexão com o banco de dados
+// Sincroniza o banco de dados
 await db.authenticationCheck();
 await db.syncModels();
 

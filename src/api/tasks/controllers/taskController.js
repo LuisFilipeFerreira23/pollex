@@ -1,5 +1,6 @@
 /* CRUD PARA TAREFAS */
 import db from "../dbmanager.js";
+const { Task } = db;
 
 const checkError = (error, res, next) => {
   if (error) {
@@ -11,11 +12,14 @@ const checkError = (error, res, next) => {
   }
 };
 
-export function getTasks(req, res, next) {
-  db.pool.query("SELECT * FROM public.tasks LIMIT 10", (error, results) => {
-    checkError(error, res, next);
-    res.status(200).json(results.rows);
-  });
+// Using Sequelize:
+export async function getTasks(req, res, next) {
+  try {
+    const results = await Task.findAll({ limit: 10 });
+    res.status(200).json(results);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export function addTask(req, res, next) {
