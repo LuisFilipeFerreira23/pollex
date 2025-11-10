@@ -51,4 +51,8 @@ export default {
   syncModels,
   defineTask,
   Task,
+  User,
+  Space,
+  Notification,
+  Doc,
 };
