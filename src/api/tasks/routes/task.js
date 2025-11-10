@@ -3,6 +3,7 @@ import express from "express";
 // Importa os controladores das tarefas
 import {
   addTask,
+  getTaskById,
   deleteTask,
   getTasks,
   updateTask,
@@ -15,6 +16,9 @@ const router = express.Router();
 
 // Rota para obter todas as tarefas
 router.get("/", getTasks);
+
+// Rota para obter uma tarefa por ID
+router.get("/:id", getTaskById);
 
 // Rota para criar uma nova tarefa
 router.post("/create/", addTask);
