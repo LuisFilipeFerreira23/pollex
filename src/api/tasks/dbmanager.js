@@ -1,14 +1,3 @@
-//POSTGRESQL
-import { Pool } from "pg";
-
-const pool = new Pool({
-  host: process.env.POSTGRES_HOSTNAME,
-  port: Number(process.env.POSTGRES_PORT),
-  user: process.env.POSTGRES_USER,
-  password: String(process.env.POSTGRES_PASSWORD),
-  database: process.env.POSTGRES_DATABASE,
-});
-
 //SEQUELIZE
 import { Sequelize, DataTypes } from "sequelize";
 import defineTask from "./models/task.js";
@@ -46,7 +35,6 @@ async function syncModels() {
 
 //Exports
 export default {
-  pool,
   authenticationCheck,
   syncModels,
   defineTask,

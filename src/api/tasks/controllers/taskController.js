@@ -22,8 +22,9 @@ export async function getTaskById(req, res, next) {
 export async function addTask(req, res, next) {
   const { name } = req.body;
   try {
-    const results = await Task.create({ name });
-    return res.status(201).json({ results });
+    const { name } = req.body; // validate as needed
+    const results = await Task.create({ name }); // capture the result
+    return res.status(200).json({ results }); // send response
   } catch (error) {
     return next(error);
   }
@@ -31,9 +32,9 @@ export async function addTask(req, res, next) {
 
 export async function updateTask(req, res, next) {
   const { id } = req.params;
-  const { name } = req.body;
+  const { title } = req.body;
   try {
-    await Task.update({ name: name }, { where: { id: id } });
+    await Task.update({ title: title }, { where: { id: id } });
     res.status(200).json({ message: "Task updated successfully" });
   } catch (error) {
     next(error);
