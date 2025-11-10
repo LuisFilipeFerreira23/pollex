@@ -1,6 +1,4 @@
-/* CRUD PARA TAREFAS */
-import db from "../dbmanager.js";
-const { Task } = db;
+import { Task } from "../dbmanager.js";
 
 export async function getTasks(req, res, next) {
   try {

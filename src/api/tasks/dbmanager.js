@@ -34,7 +34,7 @@ async function authenticationCheck() {
 //Define Models
 const Notification = defineNotification(sequelize, DataTypes);
 const Space = defineSpace(sequelize, DataTypes);
-const Task = defineTask(sequelize, DataTypes);
+export const Task = defineTask(sequelize, DataTypes);
 const User = defineUser(sequelize, DataTypes);
 const Doc = defineDoc(sequelize, DataTypes);
 
@@ -50,5 +50,4 @@ export default {
   authenticationCheck,
   syncModels,
   defineTask,
-  Task,
 };
