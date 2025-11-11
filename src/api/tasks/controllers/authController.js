@@ -13,7 +13,6 @@ export async function login(req, res, next) {
     if (!exists) return res.status(404).json({ message: "User not found" });
 
     const isPasswordValid = await bcrypt.compare(password, exists.password);
-    console.log({ Pass: password, dbPass: exists.password });
 
     if (!isPasswordValid)
       return res.status(401).json({ message: "Invalid credentials" });
@@ -31,7 +30,6 @@ export async function register(req, res, next) {
     if (exists) return res.status(409).json({ message: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log({ hashedPassword });
 
     const newUser = await User.create({
       username,
