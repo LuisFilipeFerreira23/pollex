@@ -2,7 +2,6 @@
 import express from "express";
 // Importa os controladores das operações relacionadas ao espaço e kanban
 import {
-  initialTesting,
   getSpace,
   addKanban,
   addSpace,
@@ -16,9 +15,6 @@ import {
 
 // Cria um novo router usando o express
 const router = express.Router();
-
-//Just for initial tests
-router.get("/", initialTesting); // Obtém informações do espaço
 
 // Define as rotas relacionadas ao espaço
 router.get("/space", getSpace); // Obtém informações do espaço

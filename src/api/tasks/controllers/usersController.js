@@ -29,7 +29,7 @@ export async function updateUser(req, res, next) {
   const { id, username, email, password } = req.body;
   try {
     await User.update({ username, email, password }, { where: { id: id } });
-    res.status(200).json({ message: "User updated successfully" });
+    res.status(200).json("teste", username);
   } catch (error) {
     next("Error creating user: " + error.message);
   }
