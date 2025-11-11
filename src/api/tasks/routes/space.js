@@ -2,32 +2,22 @@
 import express from "express";
 // Importa os controladores das operações relacionadas ao espaço e kanban
 import {
-  getSpace,
-  addKanban,
+  getSpaces,
+  getSpaceById,
   addSpace,
-  editKanban,
-  editSpace,
-  getKanban,
-  getList,
-  updateKanban,
   updateSpace,
+  deleteSpace,
 } from "../controllers/spaceController.js";
 
 // Cria um novo router usando o express
 const router = express.Router();
 
 // Define as rotas relacionadas ao espaço
-router.get("/space", getSpace); // Obtém informações do espaço
-router.get("/list", getList); // Obtém uma lista de espaços
-router.post("/add", addSpace); // Adiciona um novo espaço
-router.put("/edit", editSpace); // Edita um espaço existente
-router.delete("/update", updateSpace); // Remove ou atualiza um espaço
-
-// Define as rotas relacionadas ao kanban
-router.get("/kanban", getKanban); // Obtém informações do kanban
-router.post("/add", addKanban); // Adiciona um novo kanban
-router.put("/edit", editKanban); // Edita um kanban existente
-router.delete("/update", updateKanban); // Remove ou atualiza um kanban
+router.get("/", getSpaces);
+router.get("/:id", getSpaceById);
+router.post("/create", addSpace);
+router.put("/update/:id", updateSpace);
+router.delete("/delete/:id", deleteSpace);
 
 // Exporta o router para ser utilizado no arquivo principal da aplicação
 export default router;

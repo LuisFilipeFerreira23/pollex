@@ -27,7 +27,7 @@ app.use("/dashboard", dashboardRouter);
 app.use("/docs", documentationRouter);
 app.use("/management", managementRouter);
 app.use("/setting", settingsRouter);
-app.use("/space", spaceRouter);
+app.use("/spaces", spaceRouter);
 app.use("/tasks", tasksRouter);
 app.use("/users", usersRouter);
 

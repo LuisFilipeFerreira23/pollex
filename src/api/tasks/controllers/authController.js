@@ -1,6 +1,4 @@
-import db from "../dbmanager.js";
-import bcrypt from "bcryptjs";
-const { User } = db;
+import { User } from "../dbmanager.js";
 
 export function initialTesting(req, res, next) {
   res.status(200).json({ message: "Login route is working!" });

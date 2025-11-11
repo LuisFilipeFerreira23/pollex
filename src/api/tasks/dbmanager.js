@@ -8,7 +8,7 @@ import defineDoc from "./models/doc.js";
 
 //Connection URL
 const sequelize = new Sequelize(
-  "postgres://postgres:1234@pollex-postgres:5432/pollex-tasks"
+  "postgres://postgres:postgres@pollex-postgres:5432/pollex-tasks"
 );
 
 async function authenticationCheck() {
@@ -21,11 +21,11 @@ async function authenticationCheck() {
 }
 
 //Define Models
-const Notification = defineNotification(sequelize, DataTypes);
-const Space = defineSpace(sequelize, DataTypes);
+export const Notification = defineNotification(sequelize, DataTypes);
+export const Space = defineSpace(sequelize, DataTypes);
 export const Task = defineTask(sequelize, DataTypes);
-const User = defineUser(sequelize, DataTypes);
-const Doc = defineDoc(sequelize, DataTypes);
+export const User = defineUser(sequelize, DataTypes);
+export const Doc = defineDoc(sequelize, DataTypes);
 
 // Sync Models
 async function syncModels() {
@@ -38,9 +38,4 @@ export default {
   authenticationCheck,
   syncModels,
   defineTask,
-  Task,
-  User,
-  Space,
-  Notification,
-  Doc,
 };

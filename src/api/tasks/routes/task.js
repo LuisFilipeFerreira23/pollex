@@ -12,21 +12,11 @@ import {
 // Cria um novo router usando o express
 const router = express.Router();
 
-// Define as rotas CRUD para tarefas
-
 // Rota para obter todas as tarefas
 router.get("/", getTasks);
-
-// Rota para obter uma tarefa por ID
 router.get("/:id", getTaskById);
-
-// Rota para criar uma nova tarefa
-router.post("/create/", addTask);
-
-// Rota para atualizar uma tarefa existente
+router.post("/create", addTask);
 router.put("/update/:id", updateTask);
-
-// Rota para deletar uma tarefa
 router.delete("/delete/:id", deleteTask);
 
 // Exporta o router para ser usado no arquivo principal

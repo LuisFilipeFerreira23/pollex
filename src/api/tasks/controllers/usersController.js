@@ -1,5 +1,4 @@
-import db from "../dbmanager.js";
-const { User } = db;
+import { User } from "../dbmanager.js";
 
 // Using Sequelize:
 export async function getUsers(req, res, next) {
