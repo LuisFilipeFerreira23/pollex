@@ -3,7 +3,7 @@ export default function defineSpace(sequelize, DataTypes) {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     title: DataTypes.STRING,
     description: DataTypes.TEXT,
-    creatorId: DataTypes.INTEGER,
+    creatorId: { type: DataTypes.INTEGER, foreignKey: true },
     createdAt: DataTypes.DATE,
   });
 }

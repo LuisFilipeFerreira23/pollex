@@ -1,4 +1,4 @@
-import db from "../dbmanager.js";
+import db from "../util/dbmanager.js";
 const { User } = db;
 
 // Using Sequelize:

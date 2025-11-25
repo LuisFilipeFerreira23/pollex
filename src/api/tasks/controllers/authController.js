@@ -1,4 +1,5 @@
-import db from "../dbmanager.js";
+import db from "../util/dbmanager.js";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 const { User } = db;
 
@@ -14,10 +15,18 @@ export async function login(req, res, next) {
 
     const isPasswordValid = await bcrypt.compare(password, exists.password);
 
+    const token = jwt.sign(
+      { id: exists.id, email: exists.email },
+      "your_jwt_secret",
+      {
+        expiresIn: "2h",
+      }
+    );
+
     if (!isPasswordValid)
       return res.status(401).json({ message: "Invalid credentials" });
 
-    return res.status(200).json({ message: "Login successful!" });
+    return res.status(200).json({ message: "Login successful!", token });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }

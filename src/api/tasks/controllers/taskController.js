@@ -1,4 +1,4 @@
-import { Task } from "../dbmanager.js";
+import { Task } from "../util/dbmanager.js";
 
 export async function getTasks(req, res, next) {
   try {

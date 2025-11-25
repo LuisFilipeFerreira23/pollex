@@ -8,6 +8,7 @@ import {
   getTasks,
   updateTask,
 } from "../controllers/taskController.js";
+import { isAuth } from "../middleware/is-Auth.js";
 
 // Cria um novo router usando o express
 const router = express.Router();
@@ -15,19 +16,19 @@ const router = express.Router();
 // Define as rotas CRUD para tarefas
 
 // Rota para obter todas as tarefas
-router.get("/", getTasks);
+router.get("/", isAuth, getTasks);
 
 // Rota para obter uma tarefa por ID
-router.get("/:id", getTaskById);
+router.get("/:id", isAuth, getTaskById);
 
 // Rota para criar uma nova tarefa
-router.post("/create/", addTask);
+router.post("/create/", isAuth, addTask);
 
 // Rota para atualizar uma tarefa existente
-router.put("/update/:id", updateTask);
+router.put("/update/:id", isAuth, updateTask);
 
 // Rota para deletar uma tarefa
-router.delete("/delete/:id", deleteTask);
+router.delete("/delete/:id", isAuth, deleteTask);
 
 // Exporta o router para ser usado no arquivo principal
 export default router;
