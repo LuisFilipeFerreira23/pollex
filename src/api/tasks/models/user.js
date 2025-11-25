@@ -4,7 +4,7 @@ export default function defineUser(sequelize, DataTypes) {
     username: DataTypes.STRING,
     password: DataTypes.STRING,
     email: DataTypes.STRING,
-    //roleId: { type: DataTypes.INTEGER, foreignKey: true },
+    roleId: { type: DataTypes.INTEGER, foreignKey: true },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   });

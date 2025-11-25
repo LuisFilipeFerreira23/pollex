@@ -1,4 +1,5 @@
-import { Space } from "../dbmanager.js";
+import db from "../util/dbmanager.js";
+const { Space } = db;
 
 export async function getSpaces(req, res, next) {
   try {

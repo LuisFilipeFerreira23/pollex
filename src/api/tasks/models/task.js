@@ -5,7 +5,8 @@ export default function defineTask(sequelize, DataTypes) {
     description: DataTypes.STRING,
     status: DataTypes.STRING,
     dueDate: DataTypes.DATE,
-    documentationId: DataTypes.INTEGER,
+    spaceId: { type: DataTypes.INTEGER, foreignKey: true },
+    documentationId: { type: DataTypes.INTEGER, foreignKey: true },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   });
