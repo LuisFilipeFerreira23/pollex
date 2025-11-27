@@ -1,12 +1,13 @@
 //SEQUELIZE
 import { Sequelize, DataTypes } from "sequelize";
 import defineTask from "../models/task.js";
-import defineNotification from "../models/notification.js";
+//import defineNotification from "../models/notification.js";
 import defineSpace from "../models/space.js";
 import defineUser from "../models/user.js";
-import defineComments from "../models/comments.js";
+//import defineComments from "../models/comments.js";
 //import defineDoc from "../models/doc.js";
-import defineManagement from "../models/roles.js";
+//import { Notification } from "../models/notification.js";
+import defineRoles from "../models/roles.js";
 
 //Connection URL
 const sequelize = new Sequelize(
@@ -23,12 +24,16 @@ async function authenticationCheck() {
 }
 
 //Define Models
-//const Comments = defineComments(sequelize, DataTypes);
+//POSTGRESQL
 const Roles = defineRoles(sequelize, DataTypes);
 const Space = defineSpace(sequelize, DataTypes);
 export const Task = defineTask(sequelize, DataTypes);
 const User = defineUser(sequelize, DataTypes);
+
+// MONGOOSE
 //const Doc = defineDoc(sequelize, DataTypes);
+//const Comments = defineComments(sequelize, DataTypes);
+//const Notification = defineNotification(sequelize, DataTypes);
 
 //Relationships
 //User
@@ -47,6 +52,8 @@ Space.belongsTo(User, { foreignKey: "creatorId" });
 //Documents (É MONGODB TMB)
 //Doc.hasMany(Task, { foreignKey: "documentationId" });
 //Task.belongsTo(Doc, { foreignKey: "documentationId" });
+
+//Notifications (É MONGODB TMB)
 
 // Sync Models
 async function syncModels() {
@@ -99,8 +106,8 @@ export default {
   Task,
   User,
   Space,
-  Notification,
-  Comments,
+  //Notification,
+  //Comments,
   //Doc,
   Roles,
 };

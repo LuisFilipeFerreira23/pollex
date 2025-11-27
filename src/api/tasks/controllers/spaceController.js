@@ -59,3 +59,27 @@ export async function deleteSpace(req, res, next) {
     next(error);
   }
 }
+
+export async function getList(req, res, next) {
+  res.status(200).json({ message: "getList not implemented yet" });
+}
+
+export async function editSpace(req, res, next) {
+  res.status(200).json({ message: "editSpace not implemented yet" });
+}
+
+export async function getKanban(req, res, next) {
+  res.status(200).json({ message: "getKanban not implemented yet" });
+}
+
+export async function addKanban(req, res, next) {
+  res.status(200).json({ message: "addKanban not implemented yet" });
+}
+
+export async function editKanban(req, res, next) {
+  res.status(200).json({ message: "editKanban not implemented yet" });
+}
+
+export async function updateKanban(req, res, next) {
+  res.status(200).json({ message: "updateKanban not implemented yet" });
+}

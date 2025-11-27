@@ -7,7 +7,12 @@ import {
   getSpaceById,
   addSpace,
   updateSpace,
+  getList,
   deleteSpace,
+  getKanban,
+  addKanban,
+  editKanban,
+  updateKanban,
 } from "../controllers/spaceController.js";
 import { isAuth } from "../middleware/is-Auth.js";
 
@@ -15,11 +20,12 @@ import { isAuth } from "../middleware/is-Auth.js";
 const router = express.Router();
 
 // Define as rotas relacionadas ao espaço
-router.get("/space", isAuth, getSpace); // Obtém informações do espaço
+router.get("/space", isAuth, getSpaces); // Obtém informações do espaço
 router.get("/list", isAuth, getList); // Obtém uma lista de espaços
 router.post("/add", isAuth, addSpace); // Adiciona um novo espaço
-router.put("/edit", isAuth, editSpace); // Edita um espaço existente
-router.delete("/update", isAuth, updateSpace); // Remove ou atualiza um espaço
+router.put("/:id", isAuth, getSpaceById); // Edita um espaço existente
+router.put("/update", isAuth, updateSpace); // Remove ou atualiza um espaço
+router.delete("/delete", isAuth, deleteSpace); // Remove ou atualiza um espaço
 
 // Define as rotas relacionadas ao kanban
 router.get("/kanban", isAuth, getKanban); // Obtém informações do kanban

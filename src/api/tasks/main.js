@@ -1,5 +1,7 @@
 import bodyParser from "body-parser";
 import express from "express";
+import https from "https";
+import fs from "fs";
 import dotenv from "dotenv";
 import db from "./util/dbmanager.js";
 import session from "express-session";
@@ -50,12 +52,10 @@ const csrfProtection = csurf({
   },
 });
 
-const dbURI = process.env.MONGODB_URL;
-
 // Sincroniza o banco de dados
 await db.authenticationCheck();
 await db.syncModels();
-//await connectMongoDB();
+await connectMongoDB();
 
 // Define as rotas da aplicação
 app.use(csrfProtection);
@@ -72,6 +72,13 @@ app.use("/tasks", tasksRouter);
 app.use("/users", usersRouter);
 
 //For External Access
-app.listen(Number(process.env.API_PORT), "0.0.0.0", () => {
-  console.log(`Listening on port ${process.env.API_PORT}`);
-});
+const httpsOptions = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+};
+
+https
+  .createServer(httpsOptions, app)
+  .listen(Number(process.env.API_PORT), "0.0.0.0", () => {
+    console.log(`Listening on port ${process.env.API_PORT}`);
+  });
