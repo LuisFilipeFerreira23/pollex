@@ -4,9 +4,9 @@ const { Space } = db;
 export async function getSpaces(req, res, next) {
   try {
     const results = await Space.findAll({ limit: 10 });
-    res.status(200).json(results);
+    return res.status(200).json(results);
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -14,9 +14,9 @@ export async function getSpaceById(req, res, next) {
   const { id } = req.params;
   try {
     const results = await Space.findAll({ where: { id: id } });
-    res.status(200).json(results);
+    return res.status(200).json(results);
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -26,7 +26,7 @@ export async function addSpace(req, res, next) {
     const results = await Space.create({ title, description, creatorId });
     return res.status(200).json({ results });
   } catch (error) {
-    return next(error);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -41,9 +41,9 @@ export async function updateSpace(req, res, next) {
     if (results === 0) {
       return res.status(404).json({ message: "Space not found" });
     }
-    res.status(200).json({ message: "Space updated successfully" });
+    return res.status(200).json({ message: "Space updated successfully" });
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -54,32 +54,32 @@ export async function deleteSpace(req, res, next) {
     if (results === 0) {
       return res.status(404).json({ message: "Space not found" });
     }
-    res.status(200).json({ message: "Space deleted successfully" });
+    return res.status(200).json({ message: "Space deleted successfully" });
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
 export async function getList(req, res, next) {
-  res.status(200).json({ message: "getList not implemented yet" });
+  return res.status(200).json({ message: "getList not implemented yet" });
 }
 
 export async function editSpace(req, res, next) {
-  res.status(200).json({ message: "editSpace not implemented yet" });
+  return res.status(200).json({ message: "editSpace not implemented yet" });
 }
 
 export async function getKanban(req, res, next) {
-  res.status(200).json({ message: "getKanban not implemented yet" });
+  return res.status(200).json({ message: "getKanban not implemented yet" });
 }
 
 export async function addKanban(req, res, next) {
-  res.status(200).json({ message: "addKanban not implemented yet" });
+  return res.status(200).json({ message: "addKanban not implemented yet" });
 }
 
 export async function editKanban(req, res, next) {
-  res.status(200).json({ message: "editKanban not implemented yet" });
+  return res.status(200).json({ message: "editKanban not implemented yet" });
 }
 
 export async function updateKanban(req, res, next) {
-  res.status(200).json({ message: "updateKanban not implemented yet" });
+  return res.status(200).json({ message: "updateKanban not implemented yet" });
 }

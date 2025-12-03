@@ -1,9 +1,9 @@
 export function getSettings(req, res, next) {
-  res.status(200).json({ message: "Settings route is working!" });
+  return res.status(200).json({ message: "Get settings route is working!" });
 }
-export function editSettings() {
-  console.log("123");
+export function editSettings(req, res, next) {
+  return res.status(200).json({ message: "Edit settings route is working!" });
 }
-export function deleteSettings() {
-  console.log("123");
+export function deleteSettings(req, res, next) {
+  return res.status(200).json({ message: "Delete settings route is working!" });
 }

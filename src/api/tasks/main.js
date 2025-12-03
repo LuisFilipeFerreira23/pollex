@@ -12,12 +12,13 @@ import cookieParser from "cookie-parser";
 import authenticationRouter from "./routes/auth.js";
 import dashboardRouter from "./routes/dashboard.js";
 import documentationRouter from "./routes/docs.js";
-import managementRouter from "./routes/management.js";
+import rolesRouter from "./routes/roles.js";
 import settingsRouter from "./routes/settings.js";
 import spaceRouter from "./routes/space.js";
 import tasksRouter from "./routes/task.js";
 import usersRouter from "./routes/users.js";
 import { connectMongoDB } from "./util/mongodb.js";
+import { specs, swaggerUiExpress } from "./public/swagger/swagger.js";
 
 // Carrega variáveis de ambiente do arquivo especificado
 dotenv.config();
@@ -58,18 +59,21 @@ await db.syncModels();
 await connectMongoDB();
 
 // Define as rotas da aplicação
+/* 
 app.use(csrfProtection);
 app.get("/csrf-token", (req, res) => {
   res.status(200).json({ csrfToken: req.csrfToken() });
 });
+*/
+app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use("/auth", authenticationRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/docs", documentationRouter);
-app.use("/management", managementRouter);
+app.use("/roles", rolesRouter);
 app.use("/setting", settingsRouter);
 app.use("/spaces", spaceRouter);
 app.use("/tasks", tasksRouter);
-app.use("/users", usersRouter);
+app.use("/users", usersRouter); //For admin
 
 //For External Access
 const httpsOptions = {

@@ -64,25 +64,25 @@ async function syncModels() {
 
 async function setRoles() {
   const defaultRoles = [
-    { id: 1, role: "Admin", canCreate: true, canEdit: true, canDelete: true },
+    { id: 1, role: "admin", canCreate: true, canEdit: true, canDelete: true },
     {
       id: 2,
-      role: "Manager",
+      role: "manager",
       canCreate: true,
       canEdit: true,
       canDelete: false,
     },
-    { id: 3, role: "Editor", canCreate: true, canEdit: true, canDelete: false },
+    { id: 3, role: "editor", canCreate: true, canEdit: true, canDelete: false },
     {
       id: 4,
-      role: "Viewer",
+      role: "viewer",
       canCreate: false,
       canEdit: false,
       canDelete: false,
     },
     {
       id: 5,
-      role: "Contributor",
+      role: "contributor",
       canCreate: true,
       canEdit: false,
       canDelete: false,

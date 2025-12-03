@@ -24,7 +24,7 @@ router.post("/create", isAuth, upload.single("file"), createDoc);
 router.post("/download", isAuth, downloadDoc);
 
 // Define a rota DELETE para apagar documentos
-router.delete("/delete", isAuth, deleteDocs);
+router.delete("/delete/:userId", isAuth, deleteDocs);
 
 // Exporta o router para ser utilizado no ficheiro principal da aplicação
 export default router;

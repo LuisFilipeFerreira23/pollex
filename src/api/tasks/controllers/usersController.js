@@ -5,9 +5,9 @@ const { User } = db;
 export async function getUsers(req, res, next) {
   try {
     const results = await User.findAll({ limit: 500 });
-    res.status(200).json(results);
+    return res.status(200).json(results);
   } catch (error) {
-    next("Error creating user: " + error.message);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -19,9 +19,9 @@ export async function createUser(req, res, next) {
       email,
       password,
     });
-    res.status(200).json(newUser);
+    return res.status(200).json(newUser);
   } catch (error) {
-    next("Error creating user: " + error.message);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -29,9 +29,9 @@ export async function updateUser(req, res, next) {
   const { id, username, email, password } = req.body;
   try {
     await User.update({ username, email, password }, { where: { id: id } });
-    res.status(200).json("teste", username);
+    return res.status(200).json({ message: "teste", username });
   } catch (error) {
-    next("Error creating user: " + error.message);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
 
@@ -39,8 +39,8 @@ export async function deleteUser(req, res, next) {
   const { id } = req.body;
   try {
     await User.destroy({ where: { id: id } });
-    res.status(200).json({ message: "User deleted successfully" });
+    return res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    next("Error creating user: " + error.message);
+    return res.status(500).json({ message: "Error:", error: error.message });
   }
 }
