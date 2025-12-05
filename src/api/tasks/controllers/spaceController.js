@@ -4,7 +4,9 @@ const { Space } = db;
 export async function getSpaces(req, res, next) {
   try {
     const results = await Space.findAll({ limit: 10 });
-    return res.status(200).json(results);
+    return res
+      .status(200)
+      .json({ message: "List of spaces retrieved successfully", results });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }
@@ -14,7 +16,9 @@ export async function getSpaceById(req, res, next) {
   const { id } = req.params;
   try {
     const results = await Space.findAll({ where: { id: id } });
-    return res.status(200).json(results);
+    return res
+      .status(200)
+      .json({ message: "Space retrieved successfully", results });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }
@@ -24,7 +28,9 @@ export async function addSpace(req, res, next) {
   const { title, description, creatorId } = req.body;
   try {
     const results = await Space.create({ title, description, creatorId });
-    return res.status(200).json({ results });
+    return res
+      .status(200)
+      .json({ message: "Space created successfully", results });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }

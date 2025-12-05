@@ -10,7 +10,6 @@ import cookieParser from "cookie-parser";
 
 // Importa os routers das diferentes funcionalidades
 import authenticationRouter from "./routes/auth.js";
-import dashboardRouter from "./routes/dashboard.js";
 import documentationRouter from "./routes/docs.js";
 import rolesRouter from "./routes/roles.js";
 import settingsRouter from "./routes/settings.js";
@@ -56,7 +55,7 @@ const csrfProtection = csurf({
 // Sincroniza o banco de dados
 await db.authenticationCheck();
 await db.syncModels();
-await connectMongoDB();
+//await connectMongoDB();
 
 // Define as rotas da aplicação
 /* 
@@ -67,7 +66,6 @@ app.get("/csrf-token", (req, res) => {
 */
 app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use("/auth", authenticationRouter);
-app.use("/dashboard", dashboardRouter);
 app.use("/docs", documentationRouter);
 app.use("/roles", rolesRouter);
 app.use("/setting", settingsRouter);

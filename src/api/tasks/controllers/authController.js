@@ -15,7 +15,7 @@ export async function login(req, res, next) {
   const { email, password } = req.body;
   try {
     const exists = await User.findOne({ where: { email: email } });
-    if (!exists) return res.status(404).json({ message: "User not found" });
+    if (!exists) return res.status(404).json({ message: "User not found!" });
 
     console.log({ exists });
 
@@ -30,7 +30,7 @@ export async function login(req, res, next) {
     );
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials!" });
     }
 
     return res.status(200).json({ message: "Login successful!", token });
@@ -44,10 +44,11 @@ export async function register(req, res, next) {
     const { email, username, password, role } = req.body;
 
     if (!username || !email || !password || !role)
-      return res.status(400).json({ message: "Missing fields" });
+      return res.status(400).json({ message: "Missing fields!" });
 
     const exists = await User.findOne({ where: { email: email } });
-    if (exists) return res.status(409).json({ message: "User already exists" });
+    if (exists)
+      return res.status(409).json({ message: "User already exists!" });
 
     const formattedRole = role.toLowerCase().trim();
 
@@ -55,7 +56,7 @@ export async function register(req, res, next) {
       where: { role: formattedRole },
     });
     if (!roleExists)
-      return res.status(404).json({ message: "Role does not exist" });
+      return res.status(404).json({ message: "Role does not exist!" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -69,7 +70,7 @@ export async function register(req, res, next) {
       .status(200)
       .json({ message: "User created successfully:", user: newUser });
   } catch (error) {
-    next("Error creating user: " + error.message);
+    return res.status(500).json({ message: "Error: ", error: error.message });
   }
 }
 

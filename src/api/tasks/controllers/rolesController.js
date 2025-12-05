@@ -15,7 +15,9 @@ export async function getUserRole(req, res, next) {
 
     const role = await Roles.findOne({ where: { id } });
 
-    return res.status(200).json(role);
+    return res
+      .status(200)
+      .json({ message: "User role retrieved successfully", role });
   } catch (error) {
     return res.status(500).json({ error: "Erro ao buscar permissões" });
   }

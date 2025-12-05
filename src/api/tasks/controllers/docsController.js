@@ -17,7 +17,9 @@ export async function getDocs(req, res, next) {
     for (const doc of cursor) {
       docs.push(doc);
     }
-    return res.status(200).json({ docs });
+    return res
+      .status(200)
+      .json({ message: "Documents retrieved successfuly", docs });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }
@@ -68,6 +70,7 @@ export async function downloadDoc(req, res, next) {
         .status(404)
         .json({ message: "File not found", error: err.message });
     });
+    return res.status(200).json({ message: "File donwloaded successfully" });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }

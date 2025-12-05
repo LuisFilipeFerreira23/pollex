@@ -15,6 +15,7 @@ import { check } from "express-validator";
 
 // Cria um novo router usando o express
 const router = express.Router();
+
 /**
  * @swagger
  * /auth:
@@ -53,12 +54,16 @@ router.get("/", initialTesting);
  *                 format: password
  *     responses:
  *       200:
- *         description: Login successful
+ *         description: Login successful!
  *       400:
- *         description: Invalid credentials
+ *         description: Validation Failed!
+ *       401:
+ *         description: Invalid credentials!
+ *       404:
+ *         description: User not found!
+ *       500:
+ *         description: Error!
  */
-// Define as rotas de autenticação
-// Rota para login
 router.post(
   "/login",
   [
@@ -84,21 +89,32 @@ router.post(
  *             type: object
  *             required:
  *               - email
+ *               - username
  *               - password
+ *               - role
  *             properties:
  *               email:
  *                 type: string
  *                 format: email
+ *               username:
+ *                 type: string
  *               password:
  *                 type: string
  *                 format: password
+ *               role:
+ *                 type: string
  *     responses:
- *       201:
+ *       200:
  *         description: User created successfully
  *       400:
- *         description: Validation error
+ *         description: Missing fields or validation error
+ *       404:
+ *         description: Role does not exist
+ *       409:
+ *         description: User already exists
+ *       500:
+ *         description: Server error
  */
-// Rota para registro de novo usuário
 router.post(
   "/register",
   [
@@ -137,12 +153,17 @@ router.post(
  *                 type: string
  *                 format: password
  *     responses:
- *       201:
- *         description: User created successfully
+ *       200:
+ *         description: Password updated successfully
  *       400:
  *         description: Validation error
+ *       401:
+ *         description: Invalid credentials
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
  */
-// Rota para recuperação de senha
 router.post(
   "/passChange",
   [
@@ -158,5 +179,4 @@ router.post(
   passwordChange
 );
 
-// Exporta o router para ser usado no arquivo principal da aplicação
 export default router;
