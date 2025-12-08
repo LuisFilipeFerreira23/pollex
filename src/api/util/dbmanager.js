@@ -1,9 +1,9 @@
 //SEQUELIZE
 import { Sequelize, DataTypes } from "sequelize";
-import defineTask from "../models/task.js";
+import defineTask from "../tasks/models/task.js";
 //import defineNotification from "../models/notification.js";
-import defineSpace from "../models/space.js";
-import defineUser from "../models/user.js";
+import defineSpace from "../tasks/models/space.js";
+import defineUser from "../users/models/user.js";
 //import defineComments from "../models/comments.js";
 //import defineDoc from "../models/doc.js";
 //import { Notification } from "../models/notification.js";

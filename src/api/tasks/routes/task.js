@@ -8,7 +8,7 @@ import {
   getTasks,
   updateTask,
 } from "../controllers/taskController.js";
-import { isAuth } from "../middleware/is-Auth.js";
+import { isAuth } from "../../middleware/is-Auth.js";
 
 // Cria um novo router usando o express
 const router = express.Router();

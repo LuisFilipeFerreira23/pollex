@@ -3,7 +3,7 @@ import express from "express";
 import { isAuth } from "../middleware/is-Auth.js";
 
 // Importa a função getManagement do controller correspondente
-import { getUserRole } from "../controllers/rolesController.js";
+import { getUserRole } from "../users/controllers/rolesController.js";
 
 // Cria um novo router usando o express.Router
 const router = express.Router();

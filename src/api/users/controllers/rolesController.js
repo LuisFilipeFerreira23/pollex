@@ -1,4 +1,4 @@
-import db from "../util/dbmanager.js";
+import db from "../../util/dbmanager.js";
 const { Roles } = db;
 
 export async function getUserRole(req, res, next) {
