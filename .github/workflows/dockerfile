@@ -1,7 +1,0 @@
-FROM node:22.13.1-alpine
-WORKDIR /api
-COPY ./package.json .
-RUN npm install --omit=dev
-RUN npm install -g nodemon
-COPY . .
-CMD ["npm", "start"]
