@@ -173,3 +173,6 @@ src/api/certs
 
 # PG Data
 postgres
+
+# Certificates
+certs
