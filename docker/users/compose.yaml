@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:18.0-alpine
+    container_name: postgres-users
+    hostname: ${USERS_POSTGRES_HOSTNAME}
+    restart: unless-stopped
+    command:
+      - "postgres"
+      - "-c"
+      - "port=${USERS_POSTGRES_PORT}"
+    ports:
+      - "${USERS_POSTGRES_PORT}:${USERS_POSTGRES_PORT}"
+    expose:
+      - "${USERS_POSTGRES_PORT}"
+    environment:
+      - POSTGRES_USER=${USERS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${USERS_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${USERS_POSTGRES_DATABASE}
+      - PGDATA=/var/lib/postgresql/18/docker/users
+      - TZ=${TZ}
+    volumes:
+      - ${USERS_DATA_PATH}/var/lib/postgresql/18/docker/users
+    networks:
+      - internal-network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${USERS_POSTGRES_USER} -p ${USERS_POSTGRES_PORT}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  api:
+    image: ${DOCKER_REGISTRY}/users:dev
+    pull_policy: never
+    container_name: api-users
+    hostname: api
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: ./docker/users/dockerfile
+    ports:
+      - "${USERS_API_PORT}:${USERS_API_PORT}"
+    networks:
+      - internal-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  internal-network:
+    driver: bridge

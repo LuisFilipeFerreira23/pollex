@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pollex_spaces-tasks
+  name: pollex_tasks
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pollex_spaces-tasks
+      app: pollex_tasks
   template:
     metadata:
       labels:
-        app: pollex_spaces-tasks
+        app: pollex_tasks
     spec:
       containers:
-        - name: pollex_spaces-tasks
-          image: luisferreira23/pollex_spaces-tasks:latest
+        - name: pollex_tasks
+          image: luisferreira23/pollex_tasks:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5173 # replace with your app port if different
@@ -38,11 +38,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pollex_spaces-tasks
+  name: pollex_tasks
 spec:
   type: NodePort
   selector:
-    app: pollex_spaces-tasks
+    app: pollex_tasks
   ports:
     - port: 5173 # port your app runs on
       nodePort: 30080 # external port accessible on localhost:30080

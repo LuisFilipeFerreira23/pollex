@@ -1,0 +1,54 @@
+services:
+  postgres:
+    image: postgres:18.0-alpine
+    container_name: postgres-tasks
+    hostname: ${TASKS_POSTGRES_HOSTNAME}
+    restart: unless-stopped
+    command:
+      - "postgres"
+      - "-c"
+      - "port=${TASKS_POSTGRES_PORT}"
+    ports:
+      - "${TASKS_POSTGRES_PORT}:${TASKS_POSTGRES_PORT}"
+    expose:
+      - "${TASKS_POSTGRES_PORT}"
+    environment:
+      - POSTGRES_USER=${TASKS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TASKS_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${TASKS_POSTGRES_DATABASE}
+      - PGDATA=/var/lib/postgresql/18/docker/tasks
+      - TZ=${TZ}
+    volumes:
+      - ${TASKS_DATA_PATH}/var/lib/postgresql/18/docker/tasks
+    networks:
+      - internal-network
+    # ... (inside the postgres service block)
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${TASKS_POSTGRES_USER} -p ${TASKS_POSTGRES_PORT}",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+  api:
+    image: ${DOCKER_REGISTRY}/tasks:dev
+    pull_policy: never
+    container_name: api-tasks
+    hostname: api
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: ./docker/tasks/dockerfile
+    ports:
+      - "${TASKS_API_PORT}:${TASKS_API_PORT}"
+    networks:
+      - internal-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  internal-network:
+    driver: bridge

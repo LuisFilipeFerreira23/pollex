@@ -1,3 +1,6 @@
+import db from "../database/dbmanager.js";
+const { Space } = db;
+
 export async function getSpaces(req, res, next) {
   try {
     const results = await Space.findAll({ limit: 10 });

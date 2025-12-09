@@ -3,7 +3,7 @@ WORKDIR /users-api
 COPY services/shared .
 RUN npm install --omit=dev
 RUN npm install -g nodemon
-COPY services/src/users_auth .
+COPY services/src/users .
 #DEV ONLY
 COPY .env .
 #DEV ONLY

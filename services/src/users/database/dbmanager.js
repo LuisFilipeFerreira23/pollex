@@ -1,11 +1,22 @@
-//SEQUELIZE
+import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
 import defineUser from "../models/user.js";
 import defineRoles from "../models/roles.js";
 
+dotenv.config("./.env");
+
 //Connection URL
 const users = new Sequelize(
-  "postgres://postgres:postgres@postgres-users:5432/pollex-users"
+  "postgres://" +
+    process.env.USERS_POSTGRES_USER +
+    ":" +
+    process.env.USERS_POSTGRES_PASSWORD +
+    "@" +
+    process.env.USERS_POSTGRES_HOSTNAME +
+    ":" +
+    process.env.USERS_POSTGRES_PORT +
+    "/" +
+    process.env.USERS_POSTGRES_DATABASE
 );
 
 async function authenticationCheck() {

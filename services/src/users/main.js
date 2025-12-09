@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import express from "express";
 import https from "https";
@@ -14,9 +15,10 @@ import settingsRouter from "./routes/settings.js";
 import usersRouter from "./routes/users.js";
 import { specs, swaggerUiExpress } from "./swagger.js";
 
+dotenv.config("./.env");
+
 // Cria uma aplicação Express
 const app = express();
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.json());
@@ -35,7 +37,7 @@ await db.syncModels();
 // Configura a sessão do usuário(Não está completo, apenas um esqueleto)
 app.use(
   session({
-    secret: process.env.SESSION_KEY || "default_secret",
+    secret: process.env.SESSION_KEY,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -47,25 +49,14 @@ app.use(
   })
 );
 
-/* const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true, // CSRF cookie can't be accessed via JavaScript
-    sameSite: "strict",
-  },
-});
-
-app.use(csrfProtection);
-app.get("/csrf-token", (req, res) => {
-  res.status(200).json({ csrfToken: req.csrfToken() });
-});
- */
-
 //For External Access
 const httpsOptions = {
-  key: fs.readFileSync("./middleware/certs/server.key"),
-  cert: fs.readFileSync("./middleware/certs/server.crt"),
+  key: fs.readFileSync(process.env.SSL_KEY_PATH),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH),
 };
 
-https.createServer(httpsOptions, app).listen(Number(7001), "0.0.0.0", () => {
-  console.log(`Listening on port 7001`);
-});
+https
+  .createServer(httpsOptions, app)
+  .listen(process.env.USERS_API_PORT, "0.0.0.0", () => {
+    console.log(`Listening on port ` + process.env.USERS_API_PORT);
+  });

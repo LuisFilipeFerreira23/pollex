@@ -10,17 +10,17 @@ import csurf from "csurf";
 import cookieParser from "cookie-parser";
 
 // Importa os routers das diferentes funcionalidades
-import authenticationRouter from "./users_auth/routes/auth.js";
+import authenticationRouter from "./users/routes/auth.js";
 import documentationRouter from "./documents/routes/docs.js";
-import rolesRouter from "./users_auth/routes/roles.js";
-import settingsRouter from "./users_auth/routes/settings.js";
-import spaceRouter from "./spaces-tasks/routes/space.js";
-import tasksRouter from "./spaces-tasks/routes/task.js";
-import usersRouter from "./users_auth/routes/users.js";
+import rolesRouter from "./users/routes/roles.js";
+import settingsRouter from "./users/routes/settings.js";
+import spaceRouter from "./tasks/routes/space.js";
+import tasksRouter from "./tasks/routes/task.js";
+import usersRouter from "./users/routes/users.js";
 import { specs, swaggerUiExpress } from "../swagger.js";
 
 // Carrega variáveis de ambiente do arquivo especificado
-dotenv.config();
+dotenv.config("./.env");
 
 // Cria uma aplicação Express
 const app = express();

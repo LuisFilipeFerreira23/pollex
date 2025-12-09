@@ -1,10 +1,22 @@
+import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
 import defineSpace from "../models/space.js";
 import defineTask from "../models/task.js";
 
+dotenv.config("./.env");
+
 //Connection URL
 const sequelize = new Sequelize(
-  "postgres://postgres:postgres@postgres-tasks:5431/pollex-tasks"
+  "postgres://" +
+    process.env.TASKS_POSTGRES_USER +
+    ":" +
+    process.env.TASKS_POSTGRES_PASSWORD +
+    "@" +
+    process.env.TASKS_POSTGRES_HOSTNAME +
+    ":" +
+    process.env.TASKS_POSTGRES_PORT +
+    "/" +
+    process.env.TASKS_POSTGRES_DATABASE
 );
 
 //Auth Check
@@ -31,4 +43,6 @@ async function syncModels() {
 export default {
   authenticationCheck,
   syncModels,
+  Space,
+  Task,
 };
