@@ -1,37 +1,29 @@
 import dotenv from "dotenv";
-import bodyParser from "body-parser";
+dotenv.config("./.env");
 import express from "express";
 import https from "https";
 import fs from "fs";
-import db from "./database/dbmanager.js";
-
-// Importa os routers das diferentes funcionalidades
+import bodyParser from "body-parser";
 import spaceRouter from "./routes/space.js";
 import tasksRouter from "./routes/task.js";
 
-dotenv.config("./.env");
-
-// Cria uma aplicação Express
+// EXPRESS APP & MIDDLEWARE SETUP
 const app = express();
-
-// Sincroniza o banco de dados
-await db.authenticationCheck();
-await db.syncModels();
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
+// ROUTE HANDLING
 app.use("/spaces", spaceRouter);
 app.use("/tasks", tasksRouter);
 
-//For External Access
+// SERVER STARTUP & SSL CONFIG
+const PORT = Number(process.env.TASKS_API_PORT) || 5173;
+
 const httpsOptions = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+  key: fs.readFileSync(process.env.SSL_KEY_PATH, "utf8"),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH, "utf8"),
 };
 
-https
-  .createServer(httpsOptions, app)
-  .listen(Number(process.env.TASKS_API_PORT), "0.0.0.0", () => {
-    console.log(`Listening on port 5173`);
-  });
+https.createServer(httpsOptions, app).listen(PORT, "0.0.0.0", () => {
+  console.log(`HTTPS Server listening on port ${PORT}`);
+});

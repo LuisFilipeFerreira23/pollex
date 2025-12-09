@@ -1,13 +1,13 @@
 //SEQUELIZE
 import { Sequelize, DataTypes } from "sequelize";
 import defineTask from "../../models/task.js";
-//import defineNotification from "../models/notification.js";
+import defineNotification from "../models/notification.js";
 import defineSpace from "../../models/space.js";
-// import defineUser from "../models/user.js";
-//import defineComments from "../models/comments.js";
-//import defineDoc from "../models/doc.js";
-//import { Notification } from "../models/notification.js";
-// import defineRoles from "../models/roles.js";
+import defineUser from "../models/user.js";
+import defineComments from "../models/comments.js";
+import defineDoc from "../models/doc.js";
+import { Notification } from "../models/notification.js";
+import defineRoles from "../models/roles.js";
 
 //Connection URL
 const sequelize = new Sequelize(
@@ -25,35 +25,15 @@ async function authenticationCheck() {
 
 //Define Models
 //POSTGRESQL
-// const Roles = defineRoles(sequelize, DataTypes);
-// const Space = defineSpace(sequelize, DataTypes);
-// export const Task = defineTask(sequelize, DataTypes);
-// const User = defineUser(sequelize, DataTypes);
+const Roles = defineRoles(sequelize, DataTypes);
+const Space = defineSpace(sequelize, DataTypes);
+export const Task = defineTask(sequelize, DataTypes);
+const User = defineUser(sequelize, DataTypes);
 
 // MONGOOSE
-//const Doc = defineDoc(sequelize, DataTypes);
-//const Comments = defineComments(sequelize, DataTypes);
-//const Notification = defineNotification(sequelize, DataTypes);
-
-//Relationships
-//User
-User.belongsTo(Roles, { foreignKey: "roleId" });
-
-//Task
-Task.belongsTo(Space, { foreignKey: "spaceId" });
-//Task.belongsTo(Notification, { foreignKey: "notificationId" }); NOTIFS É MONGODB AGR
-
-//Space
-Space.belongsTo(User, { foreignKey: "creatorId" });
-
-//Comments (É MONGODB TMB)
-//Comments.belongsTo(User, { foreignKey: "userId" });
-
-//Documents (É MONGODB TMB)
-//Doc.hasMany(Task, { foreignKey: "documentationId" });
-//Task.belongsTo(Doc, { foreignKey: "documentationId" });
-
-//Notifications (É MONGODB TMB)
+const Doc = defineDoc(sequelize, DataTypes);
+const Comments = defineComments(sequelize, DataTypes);
+const Notification = defineNotification(sequelize, DataTypes);
 
 // Sync Models
 async function syncModels() {
@@ -62,41 +42,41 @@ async function syncModels() {
   await setRoles();
 }
 
-// async function setRoles() {
-//   const defaultRoles = [
-//     { id: 1, role: "admin", canCreate: true, canEdit: true, canDelete: true },
-//     {
-//       id: 2,
-//       role: "manager",
-//       canCreate: true,
-//       canEdit: true,
-//       canDelete: false,
-//     },
-//     { id: 3, role: "editor", canCreate: true, canEdit: true, canDelete: false },
-//     {
-//       id: 4,
-//       role: "viewer",
-//       canCreate: false,
-//       canEdit: false,
-//       canDelete: false,
-//     },
-//     {
-//       id: 5,
-//       role: "contributor",
-//       canCreate: true,
-//       canEdit: false,
-//       canDelete: false,
-//     },
-//   ];
+async function setRoles() {
+  const defaultRoles = [
+    { id: 1, role: "admin", canCreate: true, canEdit: true, canDelete: true },
+    {
+      id: 2,
+      role: "manager",
+      canCreate: true,
+      canEdit: true,
+      canDelete: false,
+    },
+    { id: 3, role: "editor", canCreate: true, canEdit: true, canDelete: false },
+    {
+      id: 4,
+      role: "viewer",
+      canCreate: false,
+      canEdit: false,
+      canDelete: false,
+    },
+    {
+      id: 5,
+      role: "contributor",
+      canCreate: true,
+      canEdit: false,
+      canDelete: false,
+    },
+  ];
 
-//   const existingCount = await Roles.count();
-//   if (existingCount === 0) {
-//     await Roles.bulkCreate(defaultRoles);
-//     console.log("Roles criado com sucesso!");
-//   } else {
-//     console.log("Roles já existem.");
-//   }
-// }
+  const existingCount = await Roles.count();
+  if (existingCount === 0) {
+    await Roles.bulkCreate(defaultRoles);
+    console.log("Roles criado com sucesso!");
+  } else {
+    console.log("Roles já existem.");
+  }
+}
 
 //Exports
 export default {
