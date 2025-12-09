@@ -169,6 +169,5 @@ vite.config.ts.timestamp-*
 postgres
 
 # Certficates
-certs/*
-!certs/
-!certs/.gitkeep # If you use a placeholder file to commit the empty folder
+*.key
+*.crt
