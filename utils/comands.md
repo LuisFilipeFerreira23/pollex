@@ -1,0 +1,29 @@
+-- PARA USO LOCAL (CRIAR IMAGE ATRAVÉS DO DIR /pollex E COLOCÁ-LO MANUALMENTE COMO UMA IMAGEM DO DOCKER DESKTOP)
+
+---- old ----
+-- build docker image
+docker compose -f docker/compose.yaml up
+-- rebuild it
+docker compose -f docker/compose.yaml up --build
+
+---- new ----
+-- build docker image
+docker compose -f .\deployments\docker\spaces-tasks\compose.yaml --env-file .env up
+docker compose -f .\.docker\spaces-tasks-compose.yaml --env-file .env up
+-- rebuild it
+docker compose -f .\deployments\docker\spaces-tasks\compose.yaml --env-file .env up --build
+
+-- PARA CARREGAR A IMAGE DO DOCKER DESKTOP PARA O MINIKUBE
+minikube start
+minikube image load pollex-api
+kubectl apply -f ./k8s/postgres-deployment.yaml 
+kubectl apply -f ./k8s/tasks-api-deployment.yaml
+--Para Linux é necessário manter aberto
+minikube service pollex-api --url
+
+-- PARA IR BUSCAR A IMAGEM AO REPOSITÓRIO (DOCKER HUB) E CARREGÁ-LA NO MINIKUBE
+minikube start
+kubectl apply -f ./k8s/postgres-deployment.yaml 
+kubectl apply -f ./k8s/tasks-api-deployment.yaml
+--Para Linux é necessário manter aberto
+minikube service pollex-api --url

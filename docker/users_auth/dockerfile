@@ -1,0 +1,10 @@
+FROM node:22.13.1-alpine
+WORKDIR /users-api
+COPY services/shared .
+RUN npm install --omit=dev
+RUN npm install -g nodemon
+COPY services/src/users_auth .
+#DEV ONLY
+COPY .env .
+#DEV ONLY
+CMD ["npm", "start"]

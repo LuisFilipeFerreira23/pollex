@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pollex_spaces-tasks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pollex_spaces-tasks
+  template:
+    metadata:
+      labels:
+        app: pollex_spaces-tasks
+    spec:
+      containers:
+        - name: pollex_spaces-tasks
+          image: luisferreira23/pollex_spaces-tasks:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5173 # replace with your app port if different
+          env:
+            - name: POSTGRES_HOSTNAME
+              value: ${POSTGRES_HOSTNAME}
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DATABASE
+              value: pollex-tasks
+            - name: API_PORT
+              value: "5173"
+            - name: TZ
+              value: UTC
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pollex_spaces-tasks
+spec:
+  type: NodePort
+  selector:
+    app: pollex_spaces-tasks
+  ports:
+    - port: 5173 # port your app runs on
+      nodePort: 30080 # external port accessible on localhost:30080

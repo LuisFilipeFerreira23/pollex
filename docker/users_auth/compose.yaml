@@ -1,0 +1,45 @@
+services:
+  postgres-users:
+    image: postgres:18.0-alpine
+    container_name: postgres-users
+    hostname: postgres-users
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    expose:
+      - "${POSTGRES_PORT}"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DATABASE}-users
+      - PGDATA=/var/lib/postgresql/18/docker
+      - TZ=${TZ}
+    volumes:
+      - ${DATA_PATH}/var/lib/postgresql/18/docker
+    networks:
+      - pollex-internal-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  api-users:
+    image: ${DOCKER_REGISTRY}/users-pollex:dev
+    pull_policy: never
+    container_name: users-pollex
+    hostname: users-pollex
+    restart: unless-stopped
+    build:
+      context: ../../
+      dockerfile: ./docker/users_auth/dockerfile
+    ports:
+      - "7001:7001"
+    networks:
+      - pollex-internal-network
+    depends_on:
+      postgres-users:
+        condition: service_healthy
+
+networks:
+  pollex-internal-network:
+    driver: bridge
