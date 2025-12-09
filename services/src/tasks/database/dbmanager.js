@@ -8,7 +8,7 @@ import { syncModels, authenticationCheck } from "./dbfunctions.js";
 //Connection URL
 const sequelize = new Sequelize(process.env.TASKS_POSTGRES_URL);
 
-////Models
+//Models
 const Space = defineSpace(sequelize, DataTypes);
 const Task = defineTask(sequelize, DataTypes);
 

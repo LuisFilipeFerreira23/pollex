@@ -1,112 +1,181 @@
-import db from "../util/dbmanager.js";
-const { User } = db;
-
+import dotenv from "dotenv";
+dotenv.config("./.env");
 import mongodb from "mongodb";
-const client = new mongodb.MongoClient(process.env.MONGODB_URL);
-const dbName = process.env.MONGODB_DB_NAME;
-const mongoDB = client.db(dbName);
+import { bucket } from "../main.js";
 
-const bucket = new mongodb.GridFSBucket(mongoDB, {
-  bucketName: "myCustomBucket",
-});
+// ===================================
+// 1. GET ALL DOCUMENTS (Metadata)
+// ===================================
 
-export async function getDocs(req, res, next) {
+export async function getDocs(req, res) {
   try {
-    const cursor = await bucket.find({}).toArray();
-    const docs = [];
-    for (const doc of cursor) {
-      docs.push(doc);
-    }
+    // Use projection to limit the fields returned, improving performance
+    const cursor = bucket.find(
+      {},
+      {
+        projection: {
+          _id: 1,
+          filename: 1,
+          metadata: 1,
+          contentType: 1,
+          length: 1,
+        },
+      }
+    );
+
+    const docs = await cursor.toArray();
+
     return res
       .status(200)
-      .json({ message: "Documents retrieved successfuly", docs });
+      .json({ message: "Documents retrieved successfully", docs });
   } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
+    // Log the error for internal diagnostics
+    console.error("Error retrieving documents:", error);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 }
 
-export async function createDoc(req, res, next) {
+// ===================================
+// 2. CREATE DOCUMENT (Upload)
+// ===================================
+
+export async function createDoc(req, res) {
+  const { file } = req;
+  const { userId } = req.body;
+
+  if (!file) {
+    return res.status(400).json({ error: "No file uploaded." });
+  }
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required." });
+  }
+
+  // Ensure the MongoDB client is connected if not handled globally
+  // await client.connect();
+
   try {
-    const { file } = req;
-    if (!file) return res.status(400).json({ error: "No file uploaded" });
+    const uploadStream = bucket.openUploadStream(file.originalname, {
+      contentType: file.mimetype,
+      metadata: { userId }, // Store user ID as metadata
+    });
 
-    const { userId } = req.body;
-    if (!userId) return res.status(400).json({ error: "userId is required" });
+    // --- PROMISE-BASED STREAM HANDLING FOR CLEANER ASYNC ---
+    // Wrap the stream in a Promise to use async/await
+    await new Promise((resolve, reject) => {
+      uploadStream.on("finish", resolve);
+      uploadStream.on("error", reject);
+      uploadStream.end(file.buffer);
+    });
 
-    // Create writable stream to GridFS
-    const uploadStream = bucket.openUploadStream(req.file.originalname, {
-      contentType: req.file.mimetype,
+    // Response is sent only after the file is successfully streamed to GridFS
+    return res.status(201).json({
+      message: "File uploaded successfully",
+      fileId: uploadStream.id,
       metadata: { userId },
     });
-
-    // Write buffer to GridFS
-    uploadStream.end(req.file.buffer);
-
-    uploadStream.on("finish", () => {
-      return res.status(200).json({
-        message: "File uploaded successfully",
-        fileId: uploadStream.id,
-        metadata: {
-          userId,
-        },
-      });
-    });
   } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
+    console.error("Error uploading file:", error);
+    return res.status(500).json({
+      message: "Internal server error during upload",
+      error: error.message,
+    });
   }
 }
 
-export async function downloadDoc(req, res, next) {
+// ===================================
+// 3. DOWNLOAD DOCUMENT (Stream)
+// ===================================
+
+export async function downloadDoc(req, res) {
   try {
-    const { id } = req.body;
+    // Use req.params for the ID as is standard for retrieval endpoints (e.g., /docs/:id)
+    const { id } = req.params;
 
-    // Create writable stream to GridFS
-    const downloadStream = bucket.openDownloadStream(new mongodb.ObjectId(id));
+    if (!id) {
+      return res.status(400).json({ message: "Document ID is required." });
+    }
 
+    const objectId = new mongodb.ObjectId(id);
+    const downloadStream = bucket.openDownloadStream(objectId);
+
+    // 1. Set the correct headers based on the file in GridFS (if necessary)
+    // You can use bucket.find({_id: objectId}) to get the file metadata first.
+    // For simplicity, we pipe directly, relying on the 'openDownloadStream' to handle the file.
+
+    // 2. Pipe the binary data to the response
     downloadStream.pipe(res);
 
+    // 3. CRITICAL: Handle stream errors/not found *before* piping
     downloadStream.on("error", (err) => {
+      // Check if the error is due to "File not found" (common GridFS error)
+      if (err.code === "ENOENT") {
+        return res
+          .status(404)
+          .json({ message: "File not found.", error: err.message });
+      }
+      // For other errors, send a 500
       return res
-        .status(404)
-        .json({ message: "File not found", error: err.message });
+        .status(500)
+        .json({ message: "Stream error during download.", error: err.message });
     });
-    return res.status(200).json({ message: "File donwloaded successfully" });
+
+    // 4. Note: DO NOT send a JSON response after piping. The file data is the response.
   } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
+    // This catch block handles errors related to invalid ObjectId format
+    console.error("Error initiating download:", error);
+    return res.status(500).json({
+      message: "Error initiating download stream.",
+      error: error.message,
+    });
   }
 }
 
-export async function deleteDocs(req, res, next) {
+// ===================================
+// 4. DELETE DOCUMENT (Requires Auth Check)
+// ===================================
+
+export async function deleteDocs(req, res) {
   try {
-    const { id } = req.body;
-    const { userId } = req.params;
+    const { id } = req.params; // Use params for the document ID as well
+    const { userId } = req.params; // Assuming user ID is also in params
 
-    const userExists = await User.findOne({
-      where: { id: userId },
-    });
+    // 1. Validate User Existence (using Sequelize/Mongoose User model)
+    const user = await User.findByPk(userId); // Assuming findByPk for ID lookup
 
-    if (!userExists) {
+    if (!user) {
       return res.status(404).json({ message: "User doesn't exist!" });
     }
 
-    const docExists = await bucket
-      .find({ _id: new mongodb.ObjectId(id) })
-      .toArray();
+    // 2. Validate Document Existence and Ownership
+    const objectId = new mongodb.ObjectId(id);
 
-    if (!docExists || docExists.length === 0) {
+    const docDetails = await bucket.find({ _id: objectId }).toArray();
+
+    if (!docDetails || docDetails.length === 0) {
       return res.status(404).json({ message: "Document not found!" });
     }
 
-    if (docExists[0].metadata?.userId !== userId) {
+    // 3. Ownership Check (Ensuring the user owns the file)
+    const documentMetadata = docDetails[0].metadata;
+
+    // Check if the userId in the route matches the userId in the file metadata
+    if (documentMetadata?.userId !== userId) {
       return res.status(403).json({
         message: "Unauthorized! This document doesn't belong to you.",
       });
     }
 
-    await bucket.delete(new mongodb.ObjectId(id));
+    // 4. Delete the Document
+    await bucket.delete(objectId);
 
     return res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
+    console.error("Error deleting document:", error);
+    return res.status(500).json({
+      message: "Internal server error during deletion",
+      error: error.message,
+    });
   }
 }

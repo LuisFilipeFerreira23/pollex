@@ -1,86 +1,39 @@
-import bodyParser from "body-parser";
+import dotenv from "dotenv";
+dotenv.config("./.env");
 import express from "express";
 import https from "https";
 import fs from "fs";
-import dotenv from "dotenv";
-import db from "./util/dbmanager.js";
-import { connectMongoDB } from "./util/mongodb.js";
-import session from "express-session";
-import csurf from "csurf";
+import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import documentationRouter from "./routes/docs.js";
 
-// Importa os routers das diferentes funcionalidades
-import authenticationRouter from "./users/routes/auth.js";
-import documentationRouter from "./documents/routes/docs.js";
-import rolesRouter from "./users/routes/roles.js";
-import settingsRouter from "./users/routes/settings.js";
-import spaceRouter from "./tasks/routes/space.js";
-import tasksRouter from "./tasks/routes/task.js";
-import usersRouter from "./users/routes/users.js";
-import { specs, swaggerUiExpress } from "../swagger.js";
+// 1. IMPORT YOUR DATABASE MANAGER
+import db from "./database/dbmanager.js";
+import mongodb from "mongodb";
+import mongoose from "mongoose";
 
-// Carrega variáveis de ambiente do arquivo especificado
-dotenv.config("./.env");
+await db.connectMongoDB();
+export const bucket = new mongodb.GridFSBucket(mongoose.connection.db, {
+  bucketName: "myCustomBucket",
+});
 
-// Cria uma aplicação Express
+// EXPRESS APP & MIDDLEWARE SETUP
 const app = express();
-
-app.use(cookieParser());
-
-// Configura a sessão do usuário(Não está completo, apenas um esqueleto)
-app.use(
-  session({
-    secret: process.env.SESSION_KEY || "default_secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      httpOnly: true,
-      maxAge: 2 * 60 * 60 * 1000,
-      sameSite: "strict",
-    },
-  })
-);
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 
-const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true, // CSRF cookie can't be accessed via JavaScript
-    sameSite: "strict",
-  },
-});
-
-// Sincroniza o banco de dados
-await db.authenticationCheck();
-await db.syncModels();
-//await connectMongoDB();
-
-// Define as rotas da aplicação
-/* 
-app.use(csrfProtection);
-app.get("/csrf-token", (req, res) => {
-  res.status(200).json({ csrfToken: req.csrfToken() });
-});
-*/
-app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
-app.use("/auth", authenticationRouter);
+// ROUTE HANDLING
 app.use("/docs", documentationRouter);
-app.use("/roles", rolesRouter);
-app.use("/setting", settingsRouter);
-app.use("/spaces", spaceRouter);
-app.use("/tasks", tasksRouter);
-app.use("/users", usersRouter); //For admin
 
-//For External Access
+// SERVER STARTUP & SSL CONFIG
+const PORT = Number(process.env.DOCS_API_PORT);
+
 const httpsOptions = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+  key: fs.readFileSync(process.env.SSL_KEY_PATH, "utf8"),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH, "utf8"),
 };
 
-https
-  .createServer(httpsOptions, app)
-  .listen(Number(process.env.API_PORT), "0.0.0.0", () => {
-    console.log(`Listening on port ${process.env.API_PORT}`);
-  });
+https.createServer(httpsOptions, app).listen(PORT, "0.0.0.0", () => {
+  console.log(`HTTPS Server listening on port ${PORT}`);
+});

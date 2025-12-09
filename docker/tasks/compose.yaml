@@ -22,7 +22,6 @@ services:
       - ${TASKS_DATA_PATH}/var/lib/postgresql/18/docker/tasks
     networks:
       - internal-network
-    # ... (inside the postgres service block)
     healthcheck:
       test:
         [

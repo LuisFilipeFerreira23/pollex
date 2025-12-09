@@ -1,34 +1,14 @@
 import dotenv from "dotenv";
+dotenv.config("./.env");
 import { Sequelize, DataTypes } from "sequelize";
 import defineUser from "../models/user.js";
 import defineRoles from "../models/roles.js";
-
-dotenv.config("./.env");
+import { syncModels, authenticationCheck } from "./dbfunctions.js";
 
 //Connection URL
-const users = new Sequelize(
-  "postgres://" +
-    process.env.USERS_POSTGRES_USER +
-    ":" +
-    process.env.USERS_POSTGRES_PASSWORD +
-    "@" +
-    process.env.USERS_POSTGRES_HOSTNAME +
-    ":" +
-    process.env.USERS_POSTGRES_PORT +
-    "/" +
-    process.env.USERS_POSTGRES_DATABASE
-);
+const sequelize = new Sequelize(process.env.USERS_POSTGRES_URL);
 
-async function authenticationCheck() {
-  try {
-    await users.authenticate();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-}
-
-//Define Models
+//Models
 const User = defineUser(users, DataTypes);
 const Roles = defineRoles(users, DataTypes);
 
@@ -58,7 +38,6 @@ async function setRoles() {
       canDelete: false,
     },
   ];
-
   const existingCount = await Roles.count();
   if (existingCount === 0) {
     await Roles.bulkCreate(defaultRoles);
@@ -68,16 +47,13 @@ async function setRoles() {
   }
 }
 
-// Sync Models
-async function syncModels() {
-  await users.sync({ force: true });
-  console.log("All models were synchronized successfully.");
-  await setRoles();
-  console.log("Roles set up completed.");
-}
+//Sync Models
+await syncModels(sequelize);
+await authenticationCheck(sequelize);
+await setRoles(sequelize);
 
 //Exports
 export default {
-  authenticationCheck,
-  syncModels,
+  User,
+  Roles,
 };

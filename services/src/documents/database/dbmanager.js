@@ -1,15 +1,23 @@
-import { Sequelize, DataTypes } from "sequelize";
-import defineDocument from "../models/doc.js";
-//Define Models
-const Document = defineDocument(sequelize, DataTypes);
+import dotenv from "dotenv";
+dotenv.config("./.env");
+import mongoose from "mongoose";
+import { documentSchema } from "../models/document.js";
+
 //Connection URL
-const sequelize = new Sequelize(
-  "postgres://postgres:postgres@pollex-postgres:5432/pollex-tasks"
-);
+async function connectMongoDB() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("Mongoose successfully connected to MongoDB.");
+  } catch (error) {
+    console.error("MongoDB connection failed:", error);
+  }
+}
+
+//Models
+const Document = mongoose.model("Document", documentSchema);
 
 //Exports
 export default {
-  authenticationCheck,
-  syncModels,
-  Doc: Document,
+  connectMongoDB,
+  Document,
 };

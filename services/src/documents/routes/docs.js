@@ -28,7 +28,7 @@ const router = express.Router();
  *         description: Server error
  */
 // Define a rota GET para obter documentos
-router.get("/", isAuth, getDocs);
+router.get("/" /*, isAuth*/, getDocs);
 
 /**
  * @swagger
@@ -61,7 +61,7 @@ router.get("/", isAuth, getDocs);
  *         description: Server error
  */
 // Define a rota fazer upload de um para ficheiro
-router.post("/create", isAuth, upload.single("file"), createDoc);
+router.post("/create" /*, isAuth*/, upload.single("file"), createDoc);
 
 /**
  * @swagger
@@ -91,7 +91,7 @@ router.post("/create", isAuth, upload.single("file"), createDoc);
  *         description: Server error
  */
 // Define a rota fazer download de um ficheiro
-router.post("/download", isAuth, downloadDoc);
+router.get("/:id/download" /*, isAuth*/, downloadDoc);
 
 /**
  * @swagger
@@ -130,7 +130,7 @@ router.post("/download", isAuth, downloadDoc);
  *         description: Server error
  */
 // Define a rota DELETE para apagar documentos
-router.delete("/delete/:userId", isAuth, deleteDocs);
+router.delete("/:id/:userId" /*, isAuth*/, deleteDocs);
 
 // Exporta o router para ser utilizado no ficheiro principal da aplicação
 export default router;
