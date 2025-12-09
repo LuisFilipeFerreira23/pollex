@@ -165,14 +165,10 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# Docker Databases (dev)
-docker/data
-
-# Certificates
-src/api/certs
-
 # PG Data
 postgres
 
-# Certificates
-certs
+# Certficates
+certs/*
+!certs/
+!certs/.gitkeep # If you use a placeholder file to commit the empty folder
