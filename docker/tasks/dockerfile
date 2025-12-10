@@ -1,11 +1,10 @@
-FROM node:22.13.1-alpine AS builder
-WORKDIR /tasks-api
-COPY services/shared ./
-RUN npm install --omit=dev
-
 FROM node:22.13.1-alpine
-WORKDIR /tasks-api
-COPY --from=builder /tasks-api/node_modules ./node_modules
-COPY services/shared ./
-COPY services/src/tasks .
+WORKDIR /users-api
+COPY services/shared .
+RUN npm install --omit=dev
+RUN npm install -g nodemon
+COPY services/src/users .
+#DEV ONLY
+#COPY .env .
+#DEV ONLY
 CMD ["npm", "start"]
