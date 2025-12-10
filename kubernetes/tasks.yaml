@@ -14,23 +14,48 @@ spec:
     spec:
       containers:
         - name: tasks-api-container
-          image: luisferreira23/tasks:latest # Using your DOCKER_REGISTRY value
+          image: luisferreira23/tasks:latest
           ports:
             - containerPort: 5173
 
-          # Inject all configuration variables
-          envFrom:
-            - configMapRef:
-                name: pollex-global-config
-            - configMapRef:
-                name: tasks-api-config
-            - secretRef:
-                name: pollex-global-secrets # For POSTGRES_USER/PASSWORD
-            - secretRef:
-                name: pollex-api-secrets # For SESSION_KEY/JWT
+          # 1. ENVIRONMENT VARIABLES from Secret
+          env:
+            # General Configuration
+            - name: PROJECT_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: pollex-api-secrets
+                  key: PROJECT_NAME
+            - name: TZ
+              valueFrom:
+                secretKeyRef:
+                  name: pollex-api-secrets
+                  key: TZ
+            # Tasks-specific Database Configuration
+            - name: TASKS_POSTGRES_URL
+              valueFrom:
+                secretKeyRef:
+                  name: pollex-api-secrets
+                  key: TASKS_POSTGRES_URL
+            # JWT/Session Configuration
+            - name: SESSION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pollex-api-secrets
+                  key: SESSION_KEY
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pollex-api-secrets
+                  key: JWT_PRIVATE_KEY
+            - name: JWT_HEADER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pollex-api-secrets
+                  key: JWT_HEADER_KEY
 
-          # Mount the SSL files for the HTTPS server
           volumeMounts:
+            # 2. VOLUME MOUNT for SSL/TLS files
             - name: ssl-volume
               mountPath: /etc/ssl-volume
               readOnly: true
@@ -43,12 +68,15 @@ spec:
               cpu: 500m
               memory: 512Mi
 
+      # 3. VOLUME DEFINITION linking to the Secret
       volumes:
         - name: ssl-volume
           secret:
-            secretName: tasks-api-ssl-secret
+            secretName: pollex-api-secrets
             items:
-              - key: server.key
-                path: server.key # The file will be available at /etc/ssl-volume/server.key
-              - key: server.crt
-                path: server.crt # The file will be available at /etc/ssl-volume/server.crt
+              # Maps the Secret key to a file named 'server.key' in the container's mountPath
+              - key: SSL_KEY_PATH
+                path: server.key
+              # Maps the Secret key to a file named 'server.crt' in the container's mountPath
+              - key: SSL_CERT_PATH
+                path: server.crt

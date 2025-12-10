@@ -1,7 +1,9 @@
+### 1. PersistentVolumeClaim (PVC)
+# Ensures dedicated persistent storage for the Tasks database instance.
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pvc
+  name: tasks-postgres-pvc # Renamed for clarity and uniqueness
 spec:
   accessModes:
     - ReadWriteOnce
@@ -10,10 +12,12 @@ spec:
       storage: 1Gi
 
 ---
+### 2. Deployment
+# Runs the PostgreSQL database dedicated to the Tasks service.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tasks-postgres # Changed name from 'postgres' to 'tasks-postgres-deployment' for clarity, though 'postgres' works if only one instance exists.
+  name: tasks-postgres-deployment
 spec:
   replicas: 1
   selector:
@@ -22,11 +26,12 @@ spec:
   template:
     metadata:
       labels:
-        app: tasks-postgres # Updated label to match selector
+        app: tasks-postgres
     spec:
       containers:
         - name: postgres
           image: postgres:18.0-alpine
+          # Note: envFrom assumes 'pollex-global-secrets' and 'pollex-global-config' exist
           envFrom:
             - secretRef:
                 name: pollex-global-secrets # Provides POSTGRES_USER and POSTGRES_PASSWORD
@@ -36,7 +41,7 @@ spec:
             - name: PGDATA
               value: /var/lib/postgresql/18/docker
             - name: POSTGRES_DB
-              value: tasks
+              value: tasks # Explicitly sets the database name for this instance
 
           ports:
             - containerPort: 5431
@@ -50,18 +55,22 @@ spec:
           volumeMounts:
             - name: postgres-storage
               mountPath: /var/lib/postgresql/18/docker
+              # The PGDATA environment variable and mountPath must match for proper data storage
       volumes:
         - name: postgres-storage
           persistentVolumeClaim:
-            claimName: postgres-pvc
+            claimName: tasks-postgres-pvc # Updated to reference the unique PVC
+
 ---
+### 3. Service
+# Exposes the Tasks PostgreSQL database internally to other services in the cluster.
 apiVersion: v1
 kind: Service
 metadata:
   name: tasks-postgres-service
 spec:
   ports:
-    - port: 5431 # Use the external port 5431 from your .env for the Tasks service
+    - port: 5431 # The service's cluster-internal port
       targetPort: 5431 # The port exposed by the PostgreSQL container
   selector:
-    app: tasks-postgres
+    app: tasks-postgres # Links the service to the tasks-postgres Pod
