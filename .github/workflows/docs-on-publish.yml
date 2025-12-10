@@ -2,14 +2,14 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Publish tasks Pollex API image on New Release
+name: Publish docs Pollex API image on New Release
 
 on:
   # push:
   #   branches:
   #     - main
   release:
-    types: [edited, published]
+    types: [published]
 
 jobs:
   # test_on_push:
@@ -46,20 +46,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: luisferreira23/tasks
+          images: luisferreira23/docs
 
       - name: Diagnose (List Files and Confirm Paths)
         run: |
           pwd
           ls -F
           ls -F services/
-          ls -F docker/tasks/
+          ls -F docker/docs/
 
       - name: Build and push Api image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: ${{ github.workspace }}
-          file: ./docker/tasks/dockerfile
+          file: ./docker/docs/dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
