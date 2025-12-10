@@ -9,8 +9,8 @@ import { syncModels, authenticationCheck } from "./dbfunctions.js";
 const sequelize = new Sequelize(process.env.USERS_POSTGRES_URL);
 
 //Models
-const User = defineUser(users, DataTypes);
-const Roles = defineRoles(users, DataTypes);
+const User = defineUser(sequelize, DataTypes);
+const Roles = defineRoles(sequelize, DataTypes);
 
 async function setRoles() {
   const defaultRoles = [
