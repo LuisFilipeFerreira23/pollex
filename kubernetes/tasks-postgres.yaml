@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasks-postgres # Changed name from 'postgres' to 'tasks-postgres-deployment' for clarity, though 'postgres' works if only one instance exists.
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasks-postgres
+  template:
+    metadata:
+      labels:
+        app: tasks-postgres # Updated label to match selector
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:18.0-alpine
+          envFrom:
+            - secretRef:
+                name: pollex-global-secrets # Provides POSTGRES_USER and POSTGRES_PASSWORD
+            - configMapRef:
+                name: pollex-global-config # Provides TZ
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/18/docker
+            - name: POSTGRES_DB
+              value: tasks
+
+          ports:
+            - containerPort: 5431
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/18/docker
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasks-postgres-service
+spec:
+  ports:
+    - port: 5431 # Use the external port 5431 from your .env for the Tasks service
+      targetPort: 5431 # The port exposed by the PostgreSQL container
+  selector:
+    app: tasks-postgres

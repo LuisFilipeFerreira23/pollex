@@ -1,19 +1,18 @@
-
     -Notifications(Secondary):
         -Search what packages to use for email notifs only;
         -Implement them for each notification created on the DB;
         -Remove notifications from the DB(????);
 
-    -Isolate the different microsservices:
-        -Identify at least 2 microsservices for the work;
-        -Create different folders for each microsservice(route, model and controller together);
+    <!-- -Isolate the different microsservices: -->
+        <!-- -Identify at least 2 microsservices for the work; -->
+        <!-- -Create different folders for each microsservice(route, model and controller together); -->
 
     -Make them communicate between each other:
         -Search what packages to use for communication between microsservices(coax was a example that appeared);
         -Implement it;
 
-    -Make them independent with each other:
-        -Create a database for each microservice to eliminate interdependency;
+    <!-- -Make them independent with each other: -->
+        <!-- -Create a database for each microservice to eliminate interdependency; -->
 
 
     Extra:
@@ -26,13 +25,13 @@
         -Data Consistency Strategy:
             -How to handle transactions across multiple databases (saga pattern, eventual consistency, etc.)
 
-        -Testing Strategy: 
+        -Testing Strategy:
             -Unit tests, integration tests between services, contract testing
 
-        -Deployment & Docker: 
+        -Deployment & Docker:
             -You have Docker files but no task for containerizing each microservice separately
 
-        -Logging & Monitoring: 
+        -Logging & Monitoring:
             -Distributed logging to track requests across services (especially important for debugging)
 
         -Authentication/Authorization Review:

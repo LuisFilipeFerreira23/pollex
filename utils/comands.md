@@ -23,7 +23,25 @@ minikube service pollex-api --url
 
 -- PARA IR BUSCAR A IMAGEM AO REPOSITÓRIO (DOCKER HUB) E CARREGÁ-LA NO MINIKUBE
 minikube start
-kubectl apply -f ./k8s/postgres-deployment.yaml
-kubectl apply -f ./k8s/tasks-api-deployment.yaml
+kubectl apply -f ./kubernetes/tasks-postgres.yaml
+
+-- ATÉ ESTAR RUNNING
+kubectl get pods
+
+kubectl apply -f ./kubernetes/tasks.yaml
+
+-- ATÉ ESTAR RUNNING
+kubectl get pods
+
+-- DEBUGGING
+kubectl describe pods
+--OR
+kubectl logs "pod/service name"
+
 --Para Linux é necessário manter aberto
-minikube service pollex-api --url
+minikube service kubernetes --url
+-- SEE WHY kubernetes???
+
+-- Deletes Deployments, Services, ConfigMaps, Secrets, Jobs, etc. / Deletes all PVCs in the default namespace
+kubectl delete deployment,service,configmap,secret,job,cronjob,pod --all -n default
+kubectl delete pvc --all -n default
