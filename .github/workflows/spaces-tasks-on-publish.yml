@@ -9,7 +9,7 @@ on:
   #   branches:
   #     - main
   release:
-    types: [published]
+    types: [edited, published]
 
 jobs:
   # test_on_push:
