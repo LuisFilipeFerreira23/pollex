@@ -6,11 +6,15 @@ export function isAuth(req, res, next) {
 
     const token = req.header(headerkey);
 
+    console.log({ token });
+
     if (!token) {
       return res.status(500).json({ message: "Invalid Token" });
     }
 
     const verifyToken = jwt.verify(token, your_jwt_private_key);
+
+    console.log({ verifyToken });
 
     req.user = verifyToken;
 

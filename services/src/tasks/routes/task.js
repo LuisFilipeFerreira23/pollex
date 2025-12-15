@@ -27,7 +27,7 @@ const router = express.Router();
  *         description: Server error
  */
 // Rota para obter todas as tarefas
-router.get("/" /*, isAuth*/, getTasks);
+router.get("/", isAuth, getTasks);
 
 /**
  * @swagger
@@ -50,7 +50,7 @@ router.get("/" /*, isAuth*/, getTasks);
  *         description: Server error
  */
 // Rota para obter uma tarefa por ID
-router.get("/:id" /*, isAuth*/, getTaskById);
+router.get("/:id", isAuth, getTaskById);
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ router.get("/:id" /*, isAuth*/, getTaskById);
  *         description: Server error
  */
 // Rota para criar uma nova tarefa
-router.post("/create/" /*, isAuth*/, addTask);
+router.post("/create/", isAuth, addTask);
 
 /**
  * @swagger
@@ -113,7 +113,7 @@ router.post("/create/" /*, isAuth*/, addTask);
  *         description: Server error
  */
 // Rota para atualizar uma tarefa existente
-router.put("/update/:id" /*, isAuth*/, updateTask);
+router.put("/update/:id", isAuth, updateTask);
 
 /**
  * @swagger
@@ -138,7 +138,7 @@ router.put("/update/:id" /*, isAuth*/, updateTask);
  *         description: Server error
  */
 // Rota para deletar uma tarefa
-router.delete("/delete/:id" /*, isAuth*/, deleteTask);
+router.delete("/delete/:id", isAuth, deleteTask);
 
 // Exporta o router para ser usado no arquivo principal
 export default router;

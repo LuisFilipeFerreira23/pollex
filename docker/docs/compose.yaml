@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     build:
       context: ../../
-      dockerfile: ./docker/documents/dockerfile
+      dockerfile: ./docker/docs/dockerfile
     ports:
       - "${DOCS_API_PORT}:${DOCS_API_PORT}"
     networks:

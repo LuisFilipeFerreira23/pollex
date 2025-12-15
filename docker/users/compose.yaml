@@ -16,6 +16,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${USERS_POSTGRES_DATABASE}
+      - USERS_POSTGRES_URL=${USERS_POSTGRES_URL}
       - PGDATA=/var/lib/postgresql/18/docker/users
       - TZ=${TZ}
     volumes:

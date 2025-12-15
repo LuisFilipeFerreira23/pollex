@@ -32,7 +32,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.get("/" /*, isAuth*/, getSpaces);
+router.get("/", isAuth, getSpaces);
 
 /**
  * @swagger
@@ -47,7 +47,7 @@ router.get("/" /*, isAuth*/, getSpaces);
  *       500:
  *         description: Server error
  */
-router.get("/list" /*, isAuth*/, getList);
+router.get("/list", isAuth, getList);
 
 /**
  * @swagger
@@ -79,7 +79,7 @@ router.get("/list" /*, isAuth*/, getList);
  *       500:
  *         description: Server error
  */
-router.post("/add" /*, isAuth*/, addSpace);
+router.post("/add", isAuth, addSpace);
 
 /**
  * @swagger
@@ -101,7 +101,7 @@ router.post("/add" /*, isAuth*/, addSpace);
  *       500:
  *         description: Server error
  */
-router.get("/:id" /*, isAuth*/, getSpaceById);
+router.get("/:id", isAuth, getSpaceById);
 
 /**
  * @swagger
@@ -135,7 +135,7 @@ router.get("/:id" /*, isAuth*/, getSpaceById);
  *       500:
  *         description: Server error
  */
-router.put("/update" /*, isAuth*/, updateSpace);
+router.put("/update", isAuth, updateSpace);
 
 /**
  * @swagger
@@ -163,7 +163,7 @@ router.put("/update" /*, isAuth*/, updateSpace);
  *       500:
  *         description: Server error
  */
-router.delete("/delete" /*, isAuth*/, deleteSpace);
+router.delete("/delete", isAuth, deleteSpace);
 
 /**
  * @swagger
@@ -178,7 +178,7 @@ router.delete("/delete" /*, isAuth*/, deleteSpace);
  *       500:
  *         description: Server error
  */
-router.get("/kanban" /*, isAuth*/, getKanban);
+router.get("/kanban", isAuth, getKanban);
 
 /**
  * @swagger
@@ -204,7 +204,7 @@ router.get("/kanban" /*, isAuth*/, getKanban);
  *       500:
  *         description: Server error
  */
-router.post("/kanban/add" /*, isAuth*/, addKanban);
+router.post("/kanban/add", isAuth, addKanban);
 
 /**
  * @swagger
@@ -230,7 +230,7 @@ router.post("/kanban/add" /*, isAuth*/, addKanban);
  *       500:
  *         description: Server error
  */
-router.put("/kanban/edit" /*, isAuth*/, editKanban);
+router.put("/kanban/edit", isAuth, editKanban);
 
 /**
  * @swagger
@@ -254,7 +254,7 @@ router.put("/kanban/edit" /*, isAuth*/, editKanban);
  *       500:
  *         description: Server error
  */
-router.delete("/kanban/update" /*, isAuth*/, updateKanban);
+router.delete("/kanban/update", isAuth, updateKanban);
 
 // Exporta o router para ser utilizado no arquivo principal da aplicação
 export default router;

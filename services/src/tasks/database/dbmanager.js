@@ -1,12 +1,15 @@
 import dotenv from "dotenv";
-dotenv.config("./.env");
 import { Sequelize, DataTypes } from "sequelize";
 import defineSpace from "../models/space.js";
 import defineTask from "../models/task.js";
 import { syncModels, authenticationCheck } from "./dbfunctions.js";
 
+dotenv.config({ path: "./.env" });
+
 //Connection URL
-const sequelize = new Sequelize(process.env.TASKS_POSTGRES_URL);
+const sequelize = new Sequelize(process.env.TASKS_POSTGRES_URL, {
+  logging: false,
+});
 
 //Models
 const Space = defineSpace(sequelize, DataTypes);

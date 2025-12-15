@@ -6,6 +6,7 @@ import fs from "fs";
 import bodyParser from "body-parser";
 import spaceRouter from "./routes/space.js";
 import tasksRouter from "./routes/task.js";
+import { specs, swaggerUiExpress } from "./swagger.js";
 
 // EXPRESS APP & MIDDLEWARE SETUP
 const app = express();
@@ -15,6 +16,7 @@ app.use(express.json());
 // ROUTE HANDLING
 app.use("/spaces", spaceRouter);
 app.use("/tasks", tasksRouter);
+app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // SERVER STARTUP & SSL CONFIG
 const PORT = Number(process.env.TASKS_API_PORT) || 5173;

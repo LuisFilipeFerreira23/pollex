@@ -6,6 +6,7 @@ import fs from "fs";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import documentationRouter from "./routes/docs.js";
+import { specs, swaggerUiExpress } from "./swagger.js";
 
 // 1. IMPORT YOUR DATABASE MANAGER
 import db from "./database/dbmanager.js";
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 // ROUTE HANDLING
 app.use("/docs", documentationRouter);
+app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
 // SERVER STARTUP & SSL CONFIG
 const PORT = Number(process.env.DOCS_API_PORT);
