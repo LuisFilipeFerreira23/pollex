@@ -3,6 +3,6 @@ WORKDIR /tasks-api
 COPY services/shared .
 RUN npm install --omit=dev
 RUN npm install -g nodemon
-COPY services/src/tasks .
+COPY services/tasks .
 COPY .env .
 CMD ["npm", "start"]

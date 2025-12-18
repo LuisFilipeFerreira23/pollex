@@ -1,0 +1,33 @@
+services:
+  gateway:
+    image: ${DOCKER_REGISTRY}/gateway:dev
+    pull_policy: never
+    container_name: api-gateway
+    hostname: gateway
+    restart: unless-stopped
+
+    build:
+      context: ../../
+      dockerfile: ./docker/gateway/dockerfile
+
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+
+    environment:
+      - NODE_ENV=development
+      - GATEWAY_PORT=${GATEWAY_PORT}
+
+      # Internal service URLs
+      - USERS_SERVICE_URL=http://api-users:${USERS_API_PORT}
+      - ACTIVITY_SERVICE_URL=http://api-activity:${ACTIVITY_API_PORT}
+      - DOCUMENTS_SERVICE_URL=http://api-documents:${DOCUMENTS_API_PORT}
+      - TASKS_SERVICE_URL=http://api-tasks:${TASKS_API_PORT}
+
+      - TZ=${TZ}
+
+    networks:
+      - internal-network
+
+networks:
+  internal-network:
+    driver: bridge

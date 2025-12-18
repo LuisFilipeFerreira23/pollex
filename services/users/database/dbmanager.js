@@ -1,9 +1,10 @@
 import dotenv from "dotenv";
-dotenv.config("./.env");
 import { Sequelize, DataTypes } from "sequelize";
 import defineUser from "../models/user.js";
 import defineRoles from "../models/roles.js";
-import { syncModels, authenticationCheck } from "./dbfunctions.js";
+import { syncModels, authenticationCheck } from "./database.js";
+
+dotenv.config("./.env");
 
 //Connection URL
 const sequelize = new Sequelize(process.env.USERS_POSTGRES_URL);

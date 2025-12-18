@@ -1,6 +1,5 @@
 services:
   mongo:
-    # Use the official MongoDB image, Alpine version is lightweight
     image: mongo:6.0-focal
     container_name: mongo-docs
     hostname: ${MONGO_HOSTNAME}
@@ -17,7 +16,20 @@ services:
     networks:
       - internal-network
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.runCommand({ping: 1})", "--quiet"]
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "-u",
+          "${MONGO_USER}",
+          "-p",
+          "${MONGO_PASSWORD}",
+          "--authenticationDatabase",
+          "admin",
+          "--eval",
+          "db.runCommand({ ping: 1 })",
+          "--quiet",
+        ]
       interval: 5s
       timeout: 2s
       retries: 5
@@ -33,14 +45,14 @@ services:
       dockerfile: ./docker/docs/dockerfile
     ports:
       - "${DOCS_API_PORT}:${DOCS_API_PORT}"
-    networks:
-      - internal-network
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - MONGODB_DB_NAME=${DOCS_MONGO_DATABASE}
     depends_on:
       mongo:
         condition: service_healthy
+    networks:
+      - internal-network
 
 networks:
   internal-network:

@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
-dotenv.config("./.env");
 import mongoose from "mongoose";
 import { documentSchema } from "../models/document.js";
+
+dotenv.config("./.env");
 
 //Connection URL
 async function connectMongoDB() {

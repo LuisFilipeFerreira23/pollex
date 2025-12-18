@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config("./.env");
 import express from "express";
-import https from "https";
-import fs from "fs";
+import http from "http";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import documentationRouter from "./routes/docs.js";
@@ -25,17 +24,12 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ROUTE HANDLING
-app.use("/docs", documentationRouter);
 app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
+app.use("/docs", documentationRouter);
 
-// SERVER STARTUP & SSL CONFIG
-const PORT = Number(process.env.DOCS_API_PORT);
+// Inicia o servidor HTTP
+const PORT = process.env.DOCS_API_PORT || 5176;
 
-const httpsOptions = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH, "utf8"),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH, "utf8"),
-};
-
-https.createServer(httpsOptions, app).listen(PORT, "0.0.0.0", () => {
-  console.log(`HTTPS Server listening on port ${PORT}`);
+http.createServer(app).listen(PORT, () => {
+  console.log(`Documents Service running on http://localhost:${PORT}`);
 });

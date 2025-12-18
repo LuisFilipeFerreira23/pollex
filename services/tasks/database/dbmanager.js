@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { Sequelize, DataTypes } from "sequelize";
 import defineSpace from "../models/space.js";
 import defineTask from "../models/task.js";
-import { syncModels, authenticationCheck } from "./dbfunctions.js";
+import { syncModels, authenticationCheck } from "./database.js";
 
 dotenv.config({ path: "./.env" });
 

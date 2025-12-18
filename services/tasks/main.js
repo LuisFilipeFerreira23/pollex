@@ -1,8 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config("./.env");
 import express from "express";
-import https from "https";
-import fs from "fs";
+import http from "http";
 import bodyParser from "body-parser";
 import spaceRouter from "./routes/space.js";
 import tasksRouter from "./routes/task.js";
@@ -14,18 +13,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 // ROUTE HANDLING
+app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use("/spaces", spaceRouter);
 app.use("/tasks", tasksRouter);
-app.use("/api-docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 
-// SERVER STARTUP & SSL CONFIG
-const PORT = Number(process.env.TASKS_API_PORT) || 5173;
+// Inicia o servidor HTTP
+const PORT = process.env.TASKS_API_PORT || 5173;
 
-const httpsOptions = {
-  key: fs.readFileSync(process.env.SSL_KEY_PATH, "utf8"),
-  cert: fs.readFileSync(process.env.SSL_CERT_PATH, "utf8"),
-};
-
-https.createServer(httpsOptions, app).listen(PORT, "0.0.0.0", () => {
-  console.log(`HTTPS Server listening on port ${PORT}`);
+http.createServer(app).listen(PORT, () => {
+  console.log(`Task Service running on http://localhost:${PORT}`);
 });

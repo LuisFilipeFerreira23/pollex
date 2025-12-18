@@ -3,7 +3,7 @@ WORKDIR /docs-api
 COPY services/shared .
 RUN npm install --omit=dev
 RUN npm install -g nodemon
-COPY services/src/documents .
+COPY services/documents .
 #DEV ONLY
 COPY .env .
 #DEV ONLY

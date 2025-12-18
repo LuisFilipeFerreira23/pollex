@@ -1,18 +1,5 @@
 "use strict";
 
-/* 
-export default function defineComments(sequelize, DataTypes) {
-  return sequelize.define("Comment", {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    content: DataTypes.STRING,
-    taskId: { type: DataTypes.INTEGER, foreignKey: true },
-    userId: { type: DataTypes.INTEGER, foreignKey: true },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE,
-  });
-}
-*/
-
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
