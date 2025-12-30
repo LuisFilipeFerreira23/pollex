@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { User } from "../../users/models/user.js";
 import { Notification } from "../models/notification.js";
 

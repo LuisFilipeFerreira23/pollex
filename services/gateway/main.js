@@ -20,8 +20,6 @@ dotenv.config("./.env");
 //EXPRESS APP SETUP
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
 app.use(cookieParser());
 
 const csrfProtection = csurf({
@@ -70,6 +68,9 @@ app.use("/api/activity", activityRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/tasks", tasksRoutes);
 app.use("/api/documents", documentsRoutes);
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
 const httpsOptions = {
   key: fs.readFileSync("./middleware/certs/server.key"),

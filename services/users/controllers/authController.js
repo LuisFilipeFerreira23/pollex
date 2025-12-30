@@ -22,6 +22,10 @@ export async function login(req, res, next) {
 
     const isPasswordValid = await bcrypt.compare(password, exists.password);
 
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials!" });
+    }
+
     const token = jwt.sign(
       { id: exists.id, email: exists.email },
       "your_jwt_private_key",
@@ -29,10 +33,6 @@ export async function login(req, res, next) {
         expiresIn: "2h",
       }
     );
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials!" });
-    }
 
     return res.status(200).json({ message: "Login successful!", token });
   } catch (error) {

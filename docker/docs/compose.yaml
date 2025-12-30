@@ -14,7 +14,7 @@ services:
     volumes:
       - ${DOCS_DATA_PATH}/var/lib/mongodb/docs:/data/db
     networks:
-      - internal-network
+      - pollex-network
     healthcheck:
       test:
         [
@@ -52,8 +52,8 @@ services:
       mongo:
         condition: service_healthy
     networks:
-      - internal-network
+      - pollex-network
 
 networks:
-  internal-network:
-    driver: bridge
+  pollex-network:
+    external: true

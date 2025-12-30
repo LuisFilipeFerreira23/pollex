@@ -22,7 +22,7 @@ services:
     volumes:
       - ${USERS_DATA_PATH}/var/lib/postgresql/18/docker/users
     networks:
-      - internal-network
+      - pollex-network
     healthcheck:
       test:
         [
@@ -44,11 +44,11 @@ services:
     ports:
       - "${USERS_API_PORT}:${USERS_API_PORT}"
     networks:
-      - internal-network
+      - pollex-network
     depends_on:
       postgres:
         condition: service_healthy
 
 networks:
-  internal-network:
-    driver: bridge
+  pollex-network:
+    external: true
