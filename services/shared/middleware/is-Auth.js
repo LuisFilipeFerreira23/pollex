@@ -2,22 +2,12 @@ import jwt from "jsonwebtoken";
 
 export function isAuth(req, res, next) {
   try {
-    const headerkey = Authorization;
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    const token = req.header(headerkey);
+    if (!token) return res.status(500).json({ message: "No Token provided!" });
 
-    console.log({ token });
-
-    if (!token) {
-      return res.status(500).json({ message: "Invalid Token" });
-    }
-
-    const verifyToken = jwt.verify(token, your_jwt_private_key);
-
-    console.log({ verifyToken });
-
+    const verifyToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
     req.user = verifyToken;
-
     next();
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });

@@ -1,3 +1,6 @@
+import dbmanager from "../database/dbmanager.js";
+const { Task } = dbmanager;
+
 export async function getTasks(req, res, next) {
   try {
     const results = await Task.findAll({ limit: 10 });
@@ -18,10 +21,10 @@ export async function getTaskById(req, res, next) {
 }
 
 export async function addTask(req, res, next) {
-  const { name } = req.body; // validate as needed
+  const { name } = req.body;
   try {
-    const results = await Task.create({ name }); // capture the result
-    return res.status(200).json({ results }); // send response
+    const results = await Task.create({ name });
+    return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }

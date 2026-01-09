@@ -13,6 +13,7 @@ import mongodb from "mongodb";
 import mongoose from "mongoose";
 
 await db.connectMongoDB();
+
 export const bucket = new mongodb.GridFSBucket(mongoose.connection.db, {
   bucketName: "myCustomBucket",
 });

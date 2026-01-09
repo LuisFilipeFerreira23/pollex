@@ -48,6 +48,7 @@ services:
     environment:
       - MONGODB_URL=${MONGODB_URL}
       - MONGODB_DB_NAME=${DOCS_MONGO_DATABASE}
+      - INTERNAL_USERS_SERVICE_URL=${INTERNAL_USERS_SERVICE_URL}
     depends_on:
       mongo:
         condition: service_healthy

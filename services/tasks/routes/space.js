@@ -135,7 +135,7 @@ router.get("/:id", isAuth, getSpaceById);
  *       500:
  *         description: Server error
  */
-router.put("/update", isAuth, updateSpace);
+router.put("/update/:id", isAuth, updateSpace);
 
 /**
  * @swagger
@@ -163,7 +163,7 @@ router.put("/update", isAuth, updateSpace);
  *       500:
  *         description: Server error
  */
-router.delete("/delete", isAuth, deleteSpace);
+router.delete("/delete/:id", isAuth, deleteSpace);
 
 /**
  * @swagger

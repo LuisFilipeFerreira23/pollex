@@ -4,6 +4,7 @@ import express from "express";
 // Importa os controladores para visualizar informações do usuário e tarefas
 import {
   getUsers,
+  getUser,
   createUser,
   deleteUser,
   updateUser,
@@ -28,6 +29,30 @@ const router = express.Router();
  */
 //Just for initial tests
 router.get("/", isAuth, getUsers);
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User retrieved successfully
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.get("/:id", getUser);
 
 /**
  * @swagger

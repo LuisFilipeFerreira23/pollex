@@ -11,6 +11,21 @@ export async function getUsers(req, res, next) {
   }
 }
 
+export async function getUser(req, res, next) {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    return res.status(500).json({ message: "Error:", error: error.message });
+  }
+}
+
 export async function createUser(req, res, next) {
   const { username, email, password } = req.body;
   try {

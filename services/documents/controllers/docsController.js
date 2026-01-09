@@ -71,15 +71,20 @@ export async function downloadDoc(req, res, next) {
 
 export async function deleteDocs(req, res, next) {
   try {
-    const { id } = req.body;
-    const { userId } = req.params;
+    const { id, userId } = req.params;
+    try {
+      const usersServiceUrl =
+        process.env.INTERNAL_USERS_SERVICE_URL || "http://api-users:5174";
 
-    const userExists = await User.findOne({
-      where: { id: userId },
-    });
+      const response = await fetch(`${usersServiceUrl}/users/${userId}`);
 
-    if (!userExists) {
-      return res.status(404).json({ message: "User doesn't exist!" });
+      if (!response.ok) {
+        return res.status(404).json({ message: "User doesn't exist!" });
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Error verifying user:", error: error.message });
     }
 
     const docExists = await bucket
