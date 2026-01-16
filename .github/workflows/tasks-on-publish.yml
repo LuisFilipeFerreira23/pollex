@@ -40,7 +40,7 @@ jobs:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
-    # needs: test_on_push
+    needs: test_on_push
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
