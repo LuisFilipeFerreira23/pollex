@@ -21,9 +21,9 @@ export async function getTaskById(req, res, next) {
 }
 
 export async function addTask(req, res, next) {
-  const { name } = req.body;
+  const { title } = req.body;
   try {
-    const results = await Task.create({ name });
+    const results = await Task.create({ title });
     return res.status(200).json({ results });
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
