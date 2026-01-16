@@ -35,6 +35,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "supertest": "^7.2.2",
     "vitest": "^4.0.17"
   }
 }
