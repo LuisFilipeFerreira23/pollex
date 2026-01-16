@@ -47,6 +47,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install dependencies
+        working-directory: services/shared
         run: npm install
       - name: Run tests
         run: npm test
