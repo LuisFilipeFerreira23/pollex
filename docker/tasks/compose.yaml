@@ -42,6 +42,10 @@ services:
       dockerfile: ./docker/tasks/dockerfile
     ports:
       - "${TASKS_API_PORT}:${TASKS_API_PORT}"
+    environment:
+      - TASKS_POSTGRES_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOSTNAME}:${TASKS_POSTGRES_PORT}/${TASKS_POSTGRES_DATABASE}
+      - NODE_ENV=production
+      - TZ=${TZ}
     networks:
       - pollex-network
     depends_on:
