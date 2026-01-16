@@ -13,8 +13,8 @@ on:
 
     #testing
 jobs:
-  build_on_release:
-    name: Push Docker image to Docker Hub
+  build_and_test_on_release:
+    name: Build Docker image
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
@@ -33,13 +33,6 @@ jobs:
         with:
           images: luisferreira23/tasks
 
-      - name: Diagnose (List Files and Confirm Paths)
-        run: |
-          pwd
-          ls -F
-          ls -F services/
-          ls -F docker/tasks/
-
       - name: Build Api image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
@@ -48,12 +41,7 @@ jobs:
           push: false
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-  test_on_push:
-    name: Run Tests on Release
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'published'
-    steps:
-      - uses: actions/checkout@v4
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -70,11 +58,12 @@ jobs:
       - name: Run API tests
         run: |
           postman collection run "44918062-12763691-ccce-4903-bd52-dc4e0703b312"
+
   push_to_registry_on_release:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
-    needs: test_on_push
+    needs: build_and_test_on_release
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
