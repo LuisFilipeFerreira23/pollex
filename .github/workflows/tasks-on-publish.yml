@@ -1,45 +1,73 @@
+# GitHub recommends pinning actions to a commit SHA.
+# To get a newer version, you will need to update the SHA.
+# You can also reference a tag or branch, but the action may change without warning.
+
 name: Publish tasks Pollex API image on New Release
 
 on:
+  # push:
+  #   branches:
+  #     - main
   release:
     types: [published]
 
 jobs:
-  test:
-    name: Run Tests
+  test_on_push:
+    name: Run Tests on Push to Main
     runs-on: ubuntu-latest
-
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: "22"
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+      - name: Install Postman CLI
+        run: |
+          curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+      - name: Login to Postman CLI
+        run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+      - name: Run API tests
+        run: |
+          postman collection run "44918062-12763691-ccce-4903-bd52-dc4e0703b312"
 
-      - run: npm ci
-      - run: npm test # Your unit tests
-      # Add your integration test command if separate
-
-  build:
-    name: Build and Push Docker Image
+  push_to_registry_on_release:
+    name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
-    needs: test # Wait for tests to pass
     if: github.event_name == 'release' && github.event.action == 'published'
-
+    # needs: test_on_push
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out the repo
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v3
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          context: .
+          images: luisferreira23/tasks
+
+      - name: Diagnose (List Files and Confirm Paths)
+        run: |
+          pwd
+          ls -F
+          ls -F services/
+          ls -F docker/tasks/
+
+      - name: Build and push Api image
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        with:
+          context: ${{ github.workspace }}
           file: ./docker/tasks/dockerfile
           push: true
-          tags: |
-            luisferreira23/tasks:${{ github.event.release.tag_name }}
-            luisferreira23/tasks:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
