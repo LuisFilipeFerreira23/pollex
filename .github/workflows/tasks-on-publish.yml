@@ -14,9 +14,9 @@ on:
     #testing
 jobs:
   test_on_push:
-    name: Run Tests on Push to Main
+    name: Run Tests on Release
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
