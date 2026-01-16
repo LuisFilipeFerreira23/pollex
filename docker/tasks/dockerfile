@@ -4,5 +4,7 @@ COPY services/shared .
 RUN npm install --omit=dev
 RUN npm install -g nodemon
 COPY services/tasks .
-COPY .env .
+# DEV ONLY
+# COPY .env .
+# DEV ONLY
 CMD ["npm", "start"]

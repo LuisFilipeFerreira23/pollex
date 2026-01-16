@@ -14,7 +14,7 @@ on:
     #testing
 jobs:
   build_on_release:
-    name: Push Docker image to Docker Hub
+    name: Build Docker image
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
@@ -32,13 +32,6 @@ jobs:
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
           images: luisferreira23/tasks
-
-      - name: Diagnose (List Files and Confirm Paths)
-        run: |
-          pwd
-          ls -F
-          ls -F services/
-          ls -F docker/tasks/
 
       - name: Build Api image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
