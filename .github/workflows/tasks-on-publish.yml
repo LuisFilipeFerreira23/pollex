@@ -11,6 +11,7 @@ on:
   release:
     types: [published]
 
+    #testing
 jobs:
   test_on_push:
     name: Run Tests on Push to Main
