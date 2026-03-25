@@ -42,3 +42,16 @@
 
         -Documentation:
             -Update API docs to reflect microservices architecture (you have Swagger started)
+
+    How to make it work:
+        -Initialize/Open Docker;
+        -Compose Docs microservices:
+            -docker compose -p docs -f docker/docs/compose.yaml --env-file .env up --build
+        -Compose Tasks microservices:
+            -docker compose -p tasks -f docker/tasks/compose.yaml --env-file .env up --build
+        -Compose User microservice:
+            -docker compose -p users -f docker/users/compose.yaml --env-file .env up --build
+        -Compose Gateway microservice:
+            -docker compose -p  gateway -f docker/gateway/compose.yaml --env-file .env up --build
+
+    -Enjoy!
