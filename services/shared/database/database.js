@@ -9,6 +9,6 @@ export async function authenticationCheck(sequelize) {
 
 // Sync Models
 export async function syncModels(sequelize) {
-  await sequelize.sync({ force: true });
+  await sequelize.sync();
   console.log("All models were synchronized successfully.");
 }
