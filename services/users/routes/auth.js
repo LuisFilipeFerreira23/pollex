@@ -8,6 +8,8 @@ import {
   login,
   register,
   passwordChange,
+  refreshAccessToken,
+  logout,
 } from "../controllers/authController.js";
 
 //Importar o middleware de autenticação
@@ -177,6 +179,70 @@ router.post(
   ],
   handleErrors,
   passwordChange
+);
+
+/**
+ * @swagger
+ * /auth/refresh:
+ *   post:
+ *     summary: Refresh access token
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *       400:
+ *         description: Refresh token is required
+ *       401:
+ *         description: Invalid or expired refresh token
+ *       500:
+ *         description: Server error
+ */
+router.post("/refresh", refreshAccessToken);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: User logout
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       400:
+ *         description: Email is required
+ *       500:
+ *         description: Server error
+ */
+router.post(
+  "/logout",
+  [check("email", "Please enter a valid email!").isEmail().normalizeEmail()],
+  handleErrors,
+  logout
 );
 
 export default router;

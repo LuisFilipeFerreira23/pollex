@@ -9,6 +9,7 @@ export default function defineUser(sequelize, DataTypes) {
     email: { type: DataTypes.STRING, requires: true },
     password: { type: DataTypes.STRING, requires: true },
     roleId: { type: DataTypes.INTEGER, foreignKey: true, requires: true },
+    refreshToken: { type: DataTypes.TEXT, allowNull: true },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
   });
