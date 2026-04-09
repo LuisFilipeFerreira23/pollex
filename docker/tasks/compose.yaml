@@ -19,7 +19,7 @@ services:
       - PGDATA=/var/lib/postgresql/18/docker/tasks
       - TZ=${TZ}
     volumes:
-      - ${TASKS_DATA_PATH}/var/lib/postgresql/18/docker/tasks
+      - postgres_data:/var/lib/postgresql/18/docker/tasks
     networks:
       - pollex-network
     healthcheck:
@@ -55,3 +55,7 @@ services:
 networks:
   pollex-network:
     external: true
+
+volumes: 
+  postgres_data:
+    name: postgres_tasks_data

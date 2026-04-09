@@ -12,7 +12,7 @@ services:
       - MONGO_INITDB_DATABASE=${DOCS_MONGO_DATABASE}
       - TZ=${TZ}
     volumes:
-      - ${DOCS_DATA_PATH}/var/lib/mongodb/docs:/data/db
+      - mongo_data_docs:/data/db
     networks:
       - pollex-network
     healthcheck:
@@ -58,3 +58,7 @@ services:
 networks:
   pollex-network:
     external: true
+
+volumes: 
+  mongo_data_docs:
+    name: mongo_docs_data

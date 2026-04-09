@@ -20,7 +20,7 @@ services:
       - PGDATA=/var/lib/postgresql/18/docker/users
       - TZ=${TZ}
     volumes:
-      - ${USERS_DATA_PATH}/var/lib/postgresql/18/docker/users
+      - postgres_data:/var/lib/postgresql/18/docker/users
     networks:
       - pollex-network
     healthcheck:
@@ -52,3 +52,7 @@ services:
 networks:
   pollex-network:
     external: true
+
+volumes: 
+  postgres_data:
+    name: postgres_users_data
