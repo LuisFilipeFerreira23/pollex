@@ -58,7 +58,7 @@ export async function login(req, res, next) {
     return res.status(200).json({
       message: "Login successful!",
       accessToken,
-      refreshToken,
+      // refreshToken,
       user: {
         id: exists.id,
         email: exists.email,
