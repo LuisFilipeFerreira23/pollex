@@ -31,6 +31,25 @@ services:
       interval: 2s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis-tasks
+    hostname: ${REDIS_HOSTNAME}
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT_TASKS}:${REDIS_PORT_TASKS}"
+    expose:
+      - "${REDIS_PORT_TASKS}"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - pollex-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   api:
     image: ${DOCKER_REGISTRY}/tasks:dev
     pull_policy: never
@@ -51,6 +70,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
 networks:
   pollex-network:
@@ -59,3 +80,5 @@ networks:
 volumes: 
   postgres_data:
     name: postgres_tasks_data
+  redis_data:
+    name: redis_tasks_data

@@ -2,63 +2,63 @@ import db from "../database/dbmanager.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import dotenv from "dotenv";
+import generateTokens from "../middleware/generateTokens.js";
+import redisClient from "../database/redis.js";
 
 dotenv.config("./.env");
 
 const { User } = db;
 const { Roles } = db;
 
-// Helper function to generate tokens
-function generateTokens(userId, email) {
-  const accessToken = jwt.sign(
-    { id: userId, email: email },
-    process.env.JWT_PRIVATE_KEY,
-    {
-      expiresIn: "30m",
-    }
-  );
-
-  const refreshToken = jwt.sign(
-    { id: userId, email: email },
-    process.env.JWT_REFRESH_KEY || process.env.JWT_PRIVATE_KEY,
-    {
-      expiresIn: "3d",
-    }
-  );
-
-  return { accessToken, refreshToken };
-}
-
+// To be deleted
 export function initialTesting(req, res, next) {
   res.status(200).json({ message: "Login route is working!" });
 }
 
+// Handles user login by verifying credentials, generating tokens, and returning user info.
 export async function login(req, res, next) {
   const { email, password } = req.body;
   try {
+    //Verify if user exists
     const exists = await User.findOne({ where: { email: email } });
     if (!exists) return res.status(404).json({ message: "User not found!" });
 
-    console.log({ exists });
-
+    // Verify password using bcrypt
     const isPasswordValid = await bcrypt.compare(password, exists.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials!" });
     }
 
-    const { accessToken, refreshToken } = generateTokens(exists.id, exists.email);
+    // Generate new access and refresh tokens
+    const { accessToken, refreshToken } = generateTokens(
+      exists.id,
+      exists.email,
+    );
+
+    // Hash the refresh token
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
 
     // Store refresh token in database
     await User.update(
-      { refreshToken: refreshToken },
-      { where: { id: exists.id } }
+      { refreshToken: hashedRefreshToken, accessToken: accessToken },
+      { where: { id: exists.id } },
     );
 
+    // Verify the refresh token by comparing it with the hashed version in the database
+    const isTokenValid = await bcrypt.compare(refreshToken, hashedRefreshToken);
+
+    if (!isTokenValid) {
+      return res
+        .status(401)
+        .json({ message: "Error generating refresh token!" });
+    }
+
+    // Return the access token and user info in the response
     return res.status(200).json({
       message: "Login successful!",
-      accessToken,
-      // refreshToken,
+      //accessToken,
+      // hashedRefreshToken,
       user: {
         id: exists.id,
         email: exists.email,
@@ -72,15 +72,19 @@ export async function login(req, res, next) {
 
 export async function register(req, res, next) {
   try {
+    // Extract registration data from request body
     const { email, username, password, role } = req.body;
 
+    // Validate that all required fields are provided
     if (!username || !email || !password || !role)
       return res.status(400).json({ message: "Missing fields!" });
 
+    // Check if user with this email already exists in the database
     const exists = await User.findOne({ where: { email: email } });
     if (exists)
       return res.status(409).json({ message: "User already exists!" });
 
+    // Format and validate the provided role
     const formattedRole = role.toLowerCase().trim();
 
     const roleExists = await Roles.findOne({
@@ -89,22 +93,34 @@ export async function register(req, res, next) {
     if (!roleExists)
       return res.status(404).json({ message: "Role does not exist!" });
 
+    // Hash the password before storing it in the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const { accessToken, refreshToken } = generateTokens(null, email);
-
+    // Create a new user with the provided information
     const newUser = await User.create({
       email,
       username,
+      accessToken: null,
+      refreshToken: null,
       password: hashedPassword,
       roleId: roleExists.id,
-      refreshToken: refreshToken,
+      refreshToken: null,
     });
 
-    return res.status(200).json({
+    // Generate access and refresh tokens for the newly created user
+    const { accessToken, refreshToken } = generateTokens(newUser.id, email);
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+
+    // Store the hashed refresh token and plain access token in the database
+    await User.update(
+      { refreshToken: hashedRefreshToken, accessToken: accessToken },
+      { where: { id: newUser.id } },
+    );
+
+    // Return the access token and user info in the response
+    return res.status(201).json({
       message: "User created successfully",
       accessToken,
-      refreshToken,
       user: {
         id: newUser.id,
         email: newUser.email,
@@ -118,36 +134,70 @@ export async function register(req, res, next) {
 
 export async function refreshAccessToken(req, res, next) {
   try {
+    // Extract the refresh token from the request body
     const { refreshToken } = req.body;
 
+    // Validate that a refresh token was provided
     if (!refreshToken)
       return res.status(400).json({ message: "Refresh token is required!" });
 
-    // Verify refresh token
+    // Verify the refresh token signature and decode it
     const decoded = jwt.verify(
       refreshToken,
-      process.env.JWT_REFRESH_KEY || process.env.JWT_PRIVATE_KEY
+      process.env.JWT_REFRESH_KEY || process.env.JWT_PRIVATE_KEY,
     );
 
-    // Check if refresh token exists in database
+    // Retrieve the user from the database using the decoded user ID
     const user = await User.findOne({
-      where: { id: decoded.id, refreshToken: refreshToken },
+      where: { id: decoded.id },
     });
 
-    if (!user)
+    // Verify that the refresh token stored in the database matches the provided one
+    const isTokenValid = await bcrypt.compare(refreshToken, user.refreshToken);
+
+    // Validate user exists and refresh token is valid
+    if (!user.refreshToken || !user || !isTokenValid)
       return res
         .status(401)
         .json({ message: "Refresh token is invalid or has been revoked!" });
 
-    // Generate new access token
+    // Generate a new access token with a 30-minute expiration
     const newAccessToken = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_PRIVATE_KEY,
       {
         expiresIn: "30m",
-      }
+      },
     );
 
+    // Blacklist the old access token in Redis if it exists
+    if (user.accessToken) {
+      try {
+        const decodedOldToken = jwt.decode(user.accessToken);
+        if (decodedOldToken && decodedOldToken.exp) {
+          // Calculate remaining time until the old token expires
+          const expiresIn = decodedOldToken.exp - Math.floor(Date.now() / 1000);
+          if (expiresIn > 0) {
+            // Store the token in Redis blacklist with its expiration time
+            await redisClient.setEx(
+              `blacklist:${user.accessToken}`,
+              expiresIn,
+              "revoked",
+            );
+          }
+        }
+      } catch (redisErr) {
+        console.error("Redis error during token refresh:", redisErr);
+      }
+    }
+
+    // Store the new access token in the database
+    await User.update(
+      { accessToken: newAccessToken },
+      { where: { id: user.id } },
+    );
+
+    // Return the new access token in the response
     return res.status(200).json({
       message: "Token refreshed successfully!",
       accessToken: newAccessToken,
@@ -160,23 +210,54 @@ export async function refreshAccessToken(req, res, next) {
     }
     return res.status(401).json({
       message: "Invalid refresh token!",
-      error: error.message,
+      error: { message: error.message },
     });
   }
 }
 
 export async function logout(req, res, next) {
   try {
-    const { email } = req.body;
+    // Extract email and password from request body for verification
+    const { email, password } = req.body;
+    // Extract the access token from the Authorization header
+    const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    if (!email)
-      return res.status(400).json({ message: "Email is required!" });
+    // Verify that the user exists in the database
+    const exists = await User.findOne({ where: { email: email } });
+    if (!exists) return res.status(404).json({ message: "User not found!" });
 
-    // Clear refresh token from database
+    // Verify the password using bcrypt comparison
+    const isPasswordValid = await bcrypt.compare(password, exists.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials!" });
+    }
+
+    // Verify the access token is valid
+    const verifyToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
+
+    if (!verifyToken) {
+      return res.status(401).json({ message: "Invalid token!" });
+    }
+
+    // Clear both refresh and access tokens from database to prevent reuse
     await User.update(
-      { refreshToken: null },
-      { where: { email: email } }
+      { refreshToken: null, accessToken: null },
+      { where: { email: email } },
     );
+
+    // Blacklist the access token in Redis with its expiration time
+    try {
+      // Calculate remaining time until the token naturally expires
+      const expiresIn = verifyToken.exp - Math.floor(Date.now() / 1000);
+      if (expiresIn > 0) {
+        // Store the token in Redis blacklist so it can't be used anymore
+        await redisClient.setEx(`blacklist:${token}`, expiresIn, "revoked");
+      }
+    } catch (redisErr) {
+      console.error("Redis error during logout:", redisErr);
+      // Continue anyway if Redis fails (graceful degradation)
+    }
 
     return res.status(200).json({ message: "Logout successful!" });
   } catch (error) {
@@ -186,24 +267,29 @@ export async function logout(req, res, next) {
 
 export async function passwordChange(req, res, next) {
   try {
+    // Extract email, old password, and new password from request body
     const { email, oldPassword, newPassword } = req.body;
 
+    // Retrieve the user from the database using the provided email
     const exists = await User.findOne({ where: { email } });
 
     if (!exists) return res.status(404).json({ message: "User not found" });
 
+    // Verify the old password by comparing it with the stored hashed password
     const isPasswordValid = await bcrypt.compare(oldPassword, exists.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Hash the new password before storing it in the database
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
+    // Update the user's password in the database with the new hashed password
     await User.update(
       {
         password: hashedPassword,
       },
-      { where: { email: email } }
+      { where: { email: email } },
     );
 
     return res.status(200).json({ message: "Password updated successfully" });

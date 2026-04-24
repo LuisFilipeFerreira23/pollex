@@ -1,3 +1,4 @@
+// Verifies that the database connection is established and working correctly.
 export async function authenticationCheck(sequelize) {
   try {
     await sequelize.authenticate();
@@ -7,8 +8,9 @@ export async function authenticationCheck(sequelize) {
   }
 }
 
-// Sync Models
+// Synchronizes all Sequelize models with the database schema.
+// The { alter: true } option automatically adds/modifies columns to match the model definitions.
 export async function syncModels(sequelize) {
-  await sequelize.sync();
+  await sequelize.sync({ alter: true });
   console.log("All models were synchronized successfully.");
 }

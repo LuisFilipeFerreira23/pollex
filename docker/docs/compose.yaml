@@ -33,7 +33,25 @@ services:
       interval: 5s
       timeout: 2s
       retries: 5
-
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis-docs
+    hostname: ${REDIS_HOSTNAME}
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT_DOCS}:${REDIS_PORT_DOCS}"
+    expose:
+      - "${REDIS_PORT_DOCS}"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - pollex-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   api:
     image: ${DOCKER_REGISTRY}/docs:dev
     pull_policy: never
@@ -52,6 +70,8 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - pollex-network
 
@@ -62,3 +82,5 @@ networks:
 volumes: 
   mongo_data_docs:
     name: mongo_docs_data
+  redis_data:
+    name: redis_docs_data
