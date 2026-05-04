@@ -108,6 +108,24 @@ describe("Task Controller Endpoints", () => {
     });
   });
 
+  describe("GET /tasks/chart-data - getChartData", () => {
+    it("should return 200 and chart data", async () => {
+      const response = await request
+        .get("/tasks/chart-data")
+        .set("Authorization", `Bearer ${mockToken}`);
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it("should return 500 when no token is provided", async () => {
+      const response = await request.get("/tasks/chart-data");
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toContain("No Token provided");
+    });
+  });
+
   describe("DELETE /tasks/delete/:id - deleteTask", () => {
     it("should return 200 and delete a task", async () => {
       const response = await request

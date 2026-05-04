@@ -7,6 +7,7 @@ import {
   deleteTask,
   getTasks,
   updateTask,
+  getChartData,
 } from "../controllers/taskController.js";
 import { isAuth } from "../middleware/is-Auth.js";
 
@@ -29,6 +30,22 @@ const router = express.Router();
 // Rota para obter todas as tarefas
 router.get("/", isAuth, getTasks);
 
+
+/**
+ * @swagger
+ * /tasks/chart-data:
+ *   get:
+ *     summary: Get chart data for tasks
+ *     tags:
+ *       - Tasks
+ *     responses:
+ *       200:
+ *         description: Chart data retrieved successfully
+ *       500:
+ *         description: Server error
+ */
+router.get("/chart-data", isAuth, getChartData);
+
 /**
  * @swagger
  * /tasks/{id}:
@@ -49,6 +66,7 @@ router.get("/", isAuth, getTasks);
  *       500:
  *         description: Server error
  */
+
 // Rota para obter uma tarefa por ID
 router.get("/:id", isAuth, getTaskById);
 
