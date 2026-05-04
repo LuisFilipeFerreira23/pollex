@@ -184,6 +184,34 @@ describe("Task Controller Unit Tests", () => {
     });
   });
 
+  describe("getChartData", () => {
+    it("should return 200 and chart data", async () => {
+      const mockChartData = [{ label: "Task 1", value: 10 }, { label: "Task 2", value: 20 }];
+      dbmanager.Task.findAll.mockResolvedValue(mockChartData);
+
+      await taskController.getChartData(mockReq, mockRes, mockNext);
+
+      expect(dbmanager.Task.findAll).toHaveBeenCalledWith({
+        attributes: [[Sequelize.fn("COUNT", Sequelize.col("id")), "total"]],
+      });
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.json).toHaveBeenCalledWith(mockChartData);
+    });
+
+    it("should return 500 when database throws an error", async () => {
+      const mockError = new Error("Failed to fetch chart data");
+      dbmanager.Task.findAll.mockRejectedValue(mockError);
+
+      await taskController.getChartData(mockReq, mockRes, mockNext);
+
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.json).toHaveBeenCalledWith({
+        message: "Error:",
+        error: "Failed to fetch chart data",
+      });
+    });
+  });
+
   describe("deleteTask", () => {
     it("should return 200 and delete a task successfully", async () => {
       mockReq.params.id = "1";
