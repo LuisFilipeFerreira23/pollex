@@ -41,7 +41,7 @@ export async function login(req, res, next) {
 
     // Store refresh token in database
     await User.update(
-      { refreshToken: hashedRefreshToken, accessToken: accessToken },
+      { refreshToken: hashedRefreshToken },
       { where: { id: exists.id } },
     );
 
@@ -54,11 +54,17 @@ export async function login(req, res, next) {
         .json({ message: "Error generating refresh token!" });
     }
 
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict",
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
+
     // Return the access token and user info in the response
     return res.status(200).json({
       message: "Login successful!",
-      //accessToken,
-      // hashedRefreshToken,
+      accessToken,
       user: {
         id: exists.id,
         email: exists.email,
@@ -100,8 +106,6 @@ export async function register(req, res, next) {
     const newUser = await User.create({
       email,
       username,
-      accessToken: null,
-      refreshToken: null,
       password: hashedPassword,
       roleId: roleExists.id,
       refreshToken: null,
@@ -113,9 +117,16 @@ export async function register(req, res, next) {
 
     // Store the hashed refresh token and plain access token in the database
     await User.update(
-      { refreshToken: hashedRefreshToken, accessToken: accessToken },
+      { refreshToken: hashedRefreshToken },
       { where: { id: newUser.id } },
     );
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "Strict",
+      maxAge: 3 * 24 * 60 * 60 * 1000,
+    });
 
     // Return the access token and user info in the response
     return res.status(201).json({
@@ -134,53 +145,42 @@ export async function register(req, res, next) {
 
 export async function refreshAccessToken(req, res, next) {
   try {
-    // Extract the refresh token from the request body
-    const { refreshToken } = req.body;
+    // Extract the access token from the Authorization header (if provided)
+    const accessToken = req.header("Authorization")?.replace("Bearer ", "");
+
+    // Extract the refresh token from the cookies in the request
+    const refreshToken = req.cookies.refreshToken;
 
     // Validate that a refresh token was provided
     if (!refreshToken)
       return res.status(400).json({ message: "Refresh token is required!" });
 
     // Verify the refresh token signature and decode it
-    const decoded = jwt.verify(
-      refreshToken,
-      process.env.JWT_REFRESH_KEY || process.env.JWT_PRIVATE_KEY,
-    );
+    const decoded = jwt.verify(refreshToken, process.env.JWT_PRIVATE_KEY);
 
-    // Retrieve the user from the database using the decoded user ID
-    const user = await User.findOne({
-      where: { id: decoded.id },
-    });
+    const user = await User.findOne({ where: { id: decoded.id } });
 
-    // Verify that the refresh token stored in the database matches the provided one
+    if (!user) return res.status(404).json({ message: "User not found!" });
+
     const isTokenValid = await bcrypt.compare(refreshToken, user.refreshToken);
 
-    // Validate user exists and refresh token is valid
-    if (!user.refreshToken || !user || !isTokenValid)
+    if (!isTokenValid)
       return res
         .status(401)
         .json({ message: "Refresh token is invalid or has been revoked!" });
 
-    // Generate a new access token with a 30-minute expiration
-    const newAccessToken = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_PRIVATE_KEY,
-      {
-        expiresIn: "30m",
-      },
-    );
-
     // Blacklist the old access token in Redis if it exists
-    if (user.accessToken) {
+    if (accessToken) {
       try {
-        const decodedOldToken = jwt.decode(user.accessToken);
-        if (decodedOldToken && decodedOldToken.exp) {
+        const decodedOldToken = jwt.decode(accessToken);
+        // Only blacklist if the old token has a valid structure and an expiration time
+        if (decodedOldToken && decodedOldToken?.exp) {
           // Calculate remaining time until the old token expires
           const expiresIn = decodedOldToken.exp - Math.floor(Date.now() / 1000);
           if (expiresIn > 0) {
             // Store the token in Redis blacklist with its expiration time
             await redisClient.setEx(
-              `blacklist:${user.accessToken}`,
+              `blacklist:${accessToken}`,
               expiresIn,
               "revoked",
             );
@@ -190,11 +190,13 @@ export async function refreshAccessToken(req, res, next) {
         console.error("Redis error during token refresh:", redisErr);
       }
     }
-
-    // Store the new access token in the database
-    await User.update(
-      { accessToken: newAccessToken },
-      { where: { id: user.id } },
+    // Generate a new access token with a 30-minute expiration
+    const newAccessToken = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_PRIVATE_KEY,
+      {
+        expiresIn: "15m",
+      },
     );
 
     // Return the new access token in the response
@@ -217,34 +219,14 @@ export async function refreshAccessToken(req, res, next) {
 
 export async function logout(req, res, next) {
   try {
-    // Extract email and password from request body for verification
-    const { email, password } = req.body;
     // Extract the access token from the Authorization header
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    // Verify that the user exists in the database
-    const exists = await User.findOne({ where: { email: email } });
-    if (!exists) return res.status(404).json({ message: "User not found!" });
-
-    // Verify the password using bcrypt comparison
-    const isPasswordValid = await bcrypt.compare(password, exists.password);
-
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "Invalid credentials!" });
-    }
+    if (!token)
+      return res.status(401).json({ message: "Access token is required!" });
 
     // Verify the access token is valid
     const verifyToken = jwt.verify(token, process.env.JWT_PRIVATE_KEY);
-
-    if (!verifyToken) {
-      return res.status(401).json({ message: "Invalid token!" });
-    }
-
-    // Clear both refresh and access tokens from database to prevent reuse
-    await User.update(
-      { refreshToken: null, accessToken: null },
-      { where: { email: email } },
-    );
 
     // Blacklist the access token in Redis with its expiration time
     try {
@@ -288,6 +270,7 @@ export async function passwordChange(req, res, next) {
     await User.update(
       {
         password: hashedPassword,
+        refreshToken: null,
       },
       { where: { email: email } },
     );

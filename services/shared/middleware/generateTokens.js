@@ -11,7 +11,7 @@ export default function generateTokens(userId, email) {
     { id: userId, email: email },
     process.env.JWT_PRIVATE_KEY,
     {
-      expiresIn: "30m",
+      expiresIn: "15m",
     },
   );
 
@@ -19,7 +19,7 @@ export default function generateTokens(userId, email) {
   // Used to obtain new access tokens when the current one expires; stored in database.
   const refreshToken = jwt.sign(
     { id: userId, email: email },
-    process.env.JWT_REFRESH_KEY || process.env.JWT_PRIVATE_KEY,
+    process.env.JWT_PRIVATE_KEY,
     {
       expiresIn: "3d",
     },

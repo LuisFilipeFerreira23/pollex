@@ -13,12 +13,9 @@ export default function defineUser(sequelize, DataTypes) {
     email: { type: DataTypes.STRING, requires: true },
     // Hashed password for secure authentication
     password: { type: DataTypes.STRING, requires: true },
+    refreshToken: { type: DataTypes.STRING }, // Stores the refresh token for session management
     // Foreign key reference to the Roles table for role-based access control
     roleId: { type: DataTypes.INTEGER, foreignKey: true, requires: true },
-    // Hashed refresh token used to obtain new access tokens; nullable if not logged in
-    refreshToken: { type: DataTypes.TEXT, allowNull: true },
-    // Current access token stored for token revocation on logout; nullable if not logged in
-    accessToken: { type: DataTypes.TEXT, allowNull: true },
     // Automatically managed timestamps for record creation and updates
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
