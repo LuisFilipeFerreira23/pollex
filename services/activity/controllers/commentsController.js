@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Comment } from '../models/comment.js';
 
 function getActorUserId(req, fallbackUserId) {
@@ -71,6 +72,12 @@ export async function editComment(req, res, next) {
             return res.status(400).json({ message: 'User ID is required' });
         }
 
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: 'Invalid comment id. Use the MongoDB _id returned when the comment was created.',
+            });
+        }
+
         const updatedUser = await Comment.findByIdAndUpdate(
             id,
             {
@@ -94,6 +101,12 @@ export async function editComment(req, res, next) {
 export async function deleteComment(req, res, next) {
     try {
         const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: 'Invalid comment id. Use the MongoDB _id returned when the comment was created.',
+            });
+        }
 
         const updatedUser = await Comment.findByIdAndDelete(id);
 

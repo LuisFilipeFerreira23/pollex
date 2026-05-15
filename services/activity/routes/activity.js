@@ -96,11 +96,18 @@ router.post('/create', isAuth, createComment);
 
 /**
  * @swagger
- * /comments/edit:
+ * /comments/edit/{id}:
  *   put:
  *     summary: Edit an existing comment
  *     tags:
  *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The comment ID
  *     requestBody:
  *       required: true
  *       content:
@@ -113,8 +120,6 @@ router.post('/create', isAuth, createComment);
  *               - taskId
  *               - userId
  *             properties:
- *               _id:
- *                 type: string
  *               content:
  *                 type: string
  *               taskId:
@@ -125,11 +130,11 @@ router.post('/create', isAuth, createComment);
  *       201:
  *         description: Comment updated successfully
  *       404:
- *         description: User or comment not found
+ *         description: Comment not found
  *       500:
  *         description: Server error
  */
-router.put('/edit', isAuth, editComment);
+router.put('/edit/:id', isAuth, editComment);
 
 /**
  * @swagger
