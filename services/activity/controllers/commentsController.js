@@ -1,6 +1,4 @@
 import { Comment } from '../models/comment.js';
-import db from '../util/dbmanager.js';
-const { User } = db;
 
 function getActorUserId(req, fallbackUserId) {
     return req.user?.id ? Number(req.user.id) : fallbackUserId ? Number(fallbackUserId) : null;
@@ -9,12 +7,6 @@ function getActorUserId(req, fallbackUserId) {
 export async function getCommentsForUserId(req, res, next) {
     try {
         const { userId } = req.params;
-
-        const existsUser = await User.findOne({ where: { id: userId } });
-
-        if (!existsUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
 
         const commentsExist = await Comment.find({ userId }).sort({ createdAt: -1 }).lean();
 
@@ -51,11 +43,8 @@ export async function createComment(req, res, next) {
         const { content, taskId } = req.body;
         const userId = getActorUserId(req, req.body.userId);
 
-        const existsUser = await User.findOne({ where: { id: userId } });
-
-        if (!existsUser) {
-            res.status(404).json({ message: 'User not found' });
-            return;
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
         }
 
         const newComment = new Comment({
@@ -78,9 +67,8 @@ export async function editComment(req, res, next) {
         const { id } = req.params;
         const userId = getActorUserId(req, req.body.userId);
 
-        const existsUser = await User.findOne({ where: { id: userId } });
-        if (!existsUser) {
-            return res.status(404).json({ message: 'User not found' });
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
         }
 
         const updatedUser = await Comment.findByIdAndUpdate(

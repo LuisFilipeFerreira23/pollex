@@ -1,57 +1,55 @@
-import { User } from "../../users/models/user.js";
-import { Notification } from "../models/notification.js";
+import { Notification } from '../models/notification.js';
 
-export function getNotifsForUser(req, res, next) {
-  try {
-    const { userId } = req.params;
+export async function getNotifsForUser(req, res, next) {
+    try {
+        const { userId } = req.params;
 
-    const existsUser = User.findOne({ where: { id: userId } });
+        if (!userId) {
+            return res.status(400).json({ message: 'userId is required' });
+        }
 
-    if (!existsUser) {
-      return res.status(404).json({ message: "User not found" });
+        const notificationsExist = await Notification.find({ userId: Number(userId) })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        if (!notificationsExist || notificationsExist.length === 0) {
+            return res.status(404).json({ message: 'Notifications not found' });
+        }
+
+        return res.status(200).json({
+            message: 'Notifications retrieved successfully',
+            notifications: notificationsExist,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
-
-    const notificationsExist = Notification.find({ userId });
-
-    if (!notificationsExist) {
-      return res.status(404).json({ message: "Notifications not found" });
-    }
-
-    return res.status(200).json({
-      message: "Notifications retrieved successfully",
-      notifications: notificationsExist,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
-  }
 }
 
 export async function createNotifs(req, res, next) {
-  try {
-    const { message, type } = req.body;
-    const { userId } = req.params;
+    try {
+        const { message, type } = req.body;
+        const { userId } = req.params;
 
-    const existsUser = User.findOne({ where: { id: userId } });
+        if (!userId) {
+            return res.status(400).json({ message: 'userId is required' });
+        }
 
-    if (!existsUser) {
-      return res.status(404).json({ message: "User not found" });
+        const newNotification = new Notification({
+            userId: Number(userId),
+            message,
+            type: Number(type),
+            isRead: false,
+        });
+
+        await newNotification.save();
+
+        return res.status(201).json({
+            message: 'Notification created successfully',
+            notification: newNotification,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
-
-    const newNotification = new Notification({
-      message,
-      type,
-      isRead: false,
-    });
-
-    await newComment.save();
-
-    return res.status(201).json({
-      message: "Notification created successfully",
-      notification: newNotification,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
-  }
 }
 
 /* 

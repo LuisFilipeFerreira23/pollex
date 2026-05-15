@@ -69,12 +69,6 @@ app.use('/api/users', usersRoutes);
 app.use('/api/tasks', tasksRoutes);
 app.use('/api/documents', documentsRoutes);
 
-// diagnostic endpoint to show resolved activity proxy target
-const resolvedActivityTarget = process.env.ACTIVITY_SERVICE_URL || 'http://api-activity:5175';
-app.get('/proxy-info', (req, res) => {
-    res.status(200).json({ activityServiceUrl: resolvedActivityTarget });
-});
-
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -84,5 +78,5 @@ const httpsOptions = {
 };
 
 https.createServer(httpsOptions, app).listen(443, () => {
-    console.log('Secure API Gateway running on https://localhost:443');
+    console.log('Secure APIIIIIII Gateway running on https://localhost:443');
 });

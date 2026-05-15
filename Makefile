@@ -12,7 +12,9 @@ RESET  := \033[0m
 
 .PHONY: help start stop down \
         start-docs start-tasks start-users start-gateway \
+	start-activity \
         stop-docs stop-tasks stop-users stop-gateway \
+	stop-activity \
         logs logs-docs logs-tasks logs-users logs-gateway \
         ps
 
@@ -31,6 +33,7 @@ help:
 	@echo "    make start-tasks"
 	@echo "    make start-users"
 	@echo "    make start-gateway"
+	@echo "    make start-activity"
 	@echo ""
 	@echo "$(YELLOW)  Stop all services:$(RESET)"
 	@echo "    make stop"
@@ -40,6 +43,7 @@ help:
 	@echo "    make stop-tasks"
 	@echo "    make stop-users"
 	@echo "    make stop-gateway"
+	@echo "    make stop-activity"
 	@echo ""
 	@echo "$(GREEN)  Other:$(RESET)"
 	@echo "    make ps         → lista containers a correr"
@@ -57,6 +61,7 @@ start: check-docker check-env
 	@$(MAKE) start-docs
 	@$(MAKE) start-tasks
 	@$(MAKE) start-users
+	@$(MAKE) start-activity
 	@$(MAKE) start-gateway
 	@echo "$(GREEN)✔ Todos os serviços estão a correr!$(RESET)"
 
@@ -77,6 +82,10 @@ start-gateway: check-docker check-env
 	@echo "$(CYAN)▶ A iniciar Gateway...$(RESET)"
 	docker compose -p gateway -f docker/gateway/compose.yaml --env-file $(ENV_FILE) up --build -d
 
+start-activity: check-docker check-env
+	@echo "$(CYAN)▶ A iniciar Activity...$(RESET)"
+	docker compose -p activity -f docker/activity/compose.yaml --env-file $(ENV_FILE) up --build -d
+
 ## ── Stop Individual ───────────────────────────────────────
 stop-docs:
 	@echo "$(YELLOW)■ A parar Docs...$(RESET)"
@@ -94,6 +103,10 @@ stop-gateway:
 	@echo "$(YELLOW)■ A parar Gateway...$(RESET)"
 	docker compose -p gateway -f docker/gateway/compose.yaml --env-file $(ENV_FILE) stop
 
+stop-activity:
+	@echo "$(YELLOW)■ A parar Activity...$(RESET)"
+	docker compose -p activity -f docker/activity/compose.yaml --env-file $(ENV_FILE) stop
+
 ## ── Stop All ──────────────────────────────────────────────
 stop:
 	@echo "$(YELLOW)■ A parar todos os microserviços...$(RESET)"
@@ -101,6 +114,7 @@ stop:
 	@$(MAKE) stop-users
 	@$(MAKE) stop-tasks
 	@$(MAKE) stop-docs
+	@$(MAKE) stop-activity
 	@echo "$(GREEN)✔ Todos os serviços parados.$(RESET)"
 
 ## ── Down (remove containers + networks) ──────────────────
@@ -110,6 +124,7 @@ down:
 	docker compose -p tasks    -f docker/tasks/compose.yaml    --env-file $(ENV_FILE) down
 	docker compose -p users    -f docker/users/compose.yaml    --env-file $(ENV_FILE) down
 	docker compose -p gateway  -f docker/gateway/compose.yaml  --env-file $(ENV_FILE) down
+	docker compose -p activity -f docker/activity/compose.yaml --env-file $(ENV_FILE) down
 	@echo "$(GREEN)✔ Tudo removido.$(RESET)"
 
 ## ── Logs ──────────────────────────────────────────────────
@@ -118,7 +133,8 @@ logs:
 	docker compose -p docs     -f docker/docs/compose.yaml     --env-file $(ENV_FILE) logs -f &
 	docker compose -p tasks    -f docker/tasks/compose.yaml    --env-file $(ENV_FILE) logs -f &
 	docker compose -p users    -f docker/users/compose.yaml    --env-file $(ENV_FILE) logs -f &
-	docker compose -p gateway  -f docker/gateway/compose.yaml  --env-file $(ENV_FILE) logs -f
+	docker compose -p gateway  -f docker/gateway/compose.yaml  --env-file $(ENV_FILE) logs -f &
+	docker compose -p activity -f docker/activity/compose.yaml --env-file $(ENV_FILE) logs -f
 
 logs-docs:
 	docker compose -p docs -f docker/docs/compose.yaml --env-file $(ENV_FILE) logs -f
@@ -131,6 +147,9 @@ logs-users:
 
 logs-gateway:
 	docker compose -p gateway -f docker/gateway/compose.yaml --env-file $(ENV_FILE) logs -f
+
+logs-activity:
+	docker compose -p activity -f docker/activity/compose.yaml --env-file $(ENV_FILE) logs -f
 
 ## ── Status ────────────────────────────────────────────────
 ps:

@@ -5,11 +5,8 @@ import db from './util/dbmanager.js';
 import { connectMongoDB } from './util/mongodb.js';
 import commentsRouter from './routes/activity.js';
 import notificationsRouter from './routes/notification.js';
-
 import http from 'http';
-
-// Importa os routers das diferentes funcionalidades
-import { specs, swaggerUiExpress } from '../swagger.js';
+import { specs, swaggerUiExpress } from './swagger.js';
 
 // Carrega variáveis de ambiente do arquivo especificado
 dotenv.config('./.env');
@@ -23,7 +20,7 @@ app.use(express.json());
 // Sincroniza o banco de dados
 await db.authenticationCheck();
 await db.syncModels();
-//await connectMongoDB();
+await connectMongoDB();
 
 app.use('/api-docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
 app.use('/comments', commentsRouter);
