@@ -5,6 +5,16 @@ const { Task } = dbmanager;
 
 export async function getTasks(req, res, next) {
   try {
+    const id = req.query.id || req.params.id;
+
+    if (id) {
+      const task = await Task.findOne({ where: { id } });
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      return res.status(200).json(task);
+    }
+
     const results = await Task.findAll({ limit: 10 });
     return res.status(200).json(results);
   } catch (error) {
@@ -13,10 +23,20 @@ export async function getTasks(req, res, next) {
 }
 
 export async function getTaskById(req, res, next) {
-  const { id } = req.params;
+  const id = req.params.id || req.query.id;
+
+  if (!id) {
+    return res.status(400).json({ message: "Missing task id" });
+  }
+
   try {
-    const results = await Task.findAll({ where: { id: id } });
-    return res.status(200).json(results);
+    const result = await Task.findOne({ where: { id } });
+
+    if (!result) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({ message: "Error:", error: error.message });
   }
