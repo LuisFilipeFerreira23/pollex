@@ -1,21 +1,21 @@
 //NPM MODULES
-import bodyParser from "body-parser";
-import https from "https";
-import fs from "fs";
-import express from "express";
-import session from "express-session";
-import csurf from "csurf";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
+import bodyParser from 'body-parser';
+import https from 'https';
+import fs from 'fs';
+import express from 'express';
+import session from 'express-session';
+import csurf from 'csurf';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 //IMPORT ROUTES
-import activityRoutes from "./routes/activity.js";
-import usersRoutes from "./routes/users.js";
-import tasksRoutes from "./routes/tasks.js";
-import documentsRoutes from "./routes/documents.js";
+import activityRoutes from './routes/activity.js';
+import usersRoutes from './routes/users.js';
+import tasksRoutes from './routes/tasks.js';
+import documentsRoutes from './routes/documents.js';
 
 //LOAD ENV VARIABLES
-dotenv.config("./.env");
+dotenv.config('./.env');
 
 //EXPRESS APP SETUP
 const app = express();
@@ -23,10 +23,10 @@ const app = express();
 app.use(cookieParser());
 
 const csrfProtection = csurf({
-  cookie: {
-    httpOnly: true, // CSRF cookie can't be accessed via JavaScript
-    sameSite: "strict",
-  },
+    cookie: {
+        httpOnly: true, // CSRF cookie can't be accessed via JavaScript
+        sameSite: 'strict',
+    },
 });
 
 /* 
@@ -42,17 +42,17 @@ const csrfProtection = csurf({
 
 // Configura a sessão do usuário(Não está completo, apenas um esqueleto)
 app.use(
-  session({
-    secret: process.env.SESSION_KEY || "default_secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      httpOnly: true,
-      maxAge: 1 * 60 * 60 * 1000,
-      sameSite: "strict",
-    },
-  })
+    session({
+        secret: process.env.SESSION_KEY || 'default_secret',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: false,
+            httpOnly: true,
+            maxAge: 1 * 60 * 60 * 1000,
+            sameSite: 'strict',
+        },
+    }),
 );
 
 // Define as rotas da aplicação
@@ -64,19 +64,25 @@ app.get("/csrf-token", (req, res) => {
 */
 
 // ROUTE HANDLING
-app.use("/api/activity", activityRoutes);
-app.use("/api/users", usersRoutes);
-app.use("/api/tasks", tasksRoutes);
-app.use("/api/documents", documentsRoutes);
+app.use('/api/activity', activityRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/tasks', tasksRoutes);
+app.use('/api/documents', documentsRoutes);
+
+// diagnostic endpoint to show resolved activity proxy target
+const resolvedActivityTarget = process.env.ACTIVITY_SERVICE_URL || 'http://api-activity:5175';
+app.get('/proxy-info', (req, res) => {
+    res.status(200).json({ activityServiceUrl: resolvedActivityTarget });
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 const httpsOptions = {
-  key: fs.readFileSync("./middleware/certs/server.key"),
-  cert: fs.readFileSync("./middleware/certs/server.crt"),
+    key: fs.readFileSync('./middleware/certs/server.key'),
+    cert: fs.readFileSync('./middleware/certs/server.crt'),
 };
 
 https.createServer(httpsOptions, app).listen(443, () => {
-  console.log("Secure API Gateway running on https://localhost:443");
+    console.log('Secure API Gateway running on https://localhost:443');
 });

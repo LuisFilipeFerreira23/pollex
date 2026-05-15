@@ -1,19 +1,21 @@
-import dotenv from "dotenv";
-import { Sequelize, DataTypes } from "sequelize";
-import defineSpace from "../models/space.js";
-import defineTask from "../models/task.js";
-import { syncModels, authenticationCheck } from "./database.js";
+import dotenv from 'dotenv';
+import { Sequelize, DataTypes } from 'sequelize';
+import defineSpace from '../models/space.js';
+import defineTask from '../models/task.js';
+import defineTaskActivity from '../models/taskActivity.js';
+import { syncModels, authenticationCheck } from './database.js';
 
-dotenv.config({ path: "./.env" });
+dotenv.config({ path: './.env' });
 
 //Connection URL
 const sequelize = new Sequelize(process.env.TASKS_POSTGRES_URL, {
-  logging: false,
+    logging: false,
 });
 
 //Models
 const Space = defineSpace(sequelize, DataTypes);
 const Task = defineTask(sequelize, DataTypes);
+const TaskActivity = defineTaskActivity(sequelize, DataTypes);
 
 //Sync Models
 await syncModels(sequelize);
@@ -21,6 +23,7 @@ await authenticationCheck(sequelize);
 
 //Exports
 export default {
-  Space,
-  Task,
+    Space,
+    Task,
+    TaskActivity,
 };

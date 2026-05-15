@@ -1,15 +1,17 @@
 // Importa a função express
-import express from "express";
+import express from 'express';
 // Importa os controladores das tarefas
 import {
-  addTask,
-  getTaskById,
-  deleteTask,
-  getTasks,
-  updateTask,
-  getChartData,
-} from "../controllers/taskController.js";
-import { isAuth } from "../middleware/is-Auth.js";
+    addTask,
+    getTaskById,
+    deleteTask,
+    getTasks,
+    updateTask,
+    getChartData,
+    getTaskActivityByTaskId,
+    getRecentTaskActivities,
+} from '../controllers/taskController.js';
+import { isAuth } from '../middleware/is-Auth.js';
 
 // Cria um novo router usando o express
 const router = express.Router();
@@ -28,8 +30,7 @@ const router = express.Router();
  *         description: Server error
  */
 // Rota para obter todas as tarefas
-router.get("/", isAuth, getTasks);
-
+router.get('/', isAuth, getTasks);
 
 /**
  * @swagger
@@ -44,7 +45,44 @@ router.get("/", isAuth, getTasks);
  *       500:
  *         description: Server error
  */
-router.get("/chart-data", isAuth, getChartData);
+router.get('/chart-data', isAuth, getChartData);
+
+/**
+ * @swagger
+ * /tasks/activity/recent:
+ *   get:
+ *     summary: Get recent task activities
+ *     tags:
+ *       - Tasks
+ *     responses:
+ *       200:
+ *         description: Recent task activities retrieved successfully
+ *       500:
+ *         description: Server error
+ */
+router.get('/activity/recent', isAuth, getRecentTaskActivities);
+
+/**
+ * @swagger
+ * /tasks/{id}/activity:
+ *   get:
+ *     summary: Get activities for a task
+ *     tags:
+ *       - Tasks
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The task ID
+ *     responses:
+ *       200:
+ *         description: Task activities retrieved successfully
+ *       500:
+ *         description: Server error
+ */
+router.get('/:id/activity', isAuth, getTaskActivityByTaskId);
 
 /**
  * @swagger
@@ -68,7 +106,7 @@ router.get("/chart-data", isAuth, getChartData);
  */
 
 // Rota para obter uma tarefa por ID
-router.get("/:id", isAuth, getTaskById);
+router.get('/:id', isAuth, getTaskById);
 
 /**
  * @swagger
@@ -95,7 +133,7 @@ router.get("/:id", isAuth, getTaskById);
  *         description: Server error
  */
 // Rota para criar uma nova tarefa
-router.post("/create/", isAuth, addTask);
+router.post('/create/', isAuth, addTask);
 
 /**
  * @swagger
@@ -131,7 +169,7 @@ router.post("/create/", isAuth, addTask);
  *         description: Server error
  */
 // Rota para atualizar uma tarefa existente
-router.put("/update/:id", isAuth, updateTask);
+router.put('/update/:id', isAuth, updateTask);
 
 /**
  * @swagger
@@ -156,7 +194,7 @@ router.put("/update/:id", isAuth, updateTask);
  *         description: Server error
  */
 // Rota para deletar uma tarefa
-router.delete("/delete/:id", isAuth, deleteTask);
+router.delete('/delete/:id', isAuth, deleteTask);
 
 // Exporta o router para ser usado no arquivo principal
 export default router;
