@@ -86,6 +86,7 @@ function buildTaskChanges(currentTask, incomingData) {
 }
 
 export async function getTasks(req, res, next) {
+<<<<<<< HEAD
     try {
         const results = await Task.findAll({ limit: 10 });
         return res.status(200).json(results);
@@ -120,6 +121,44 @@ export async function getTaskById(req, res, next) {
     } catch (error) {
         return res.status(500).json({ message: 'Error:', error: error.message });
     }
+=======
+  try {
+    const id = req.query.id || req.params.id;
+
+    if (id) {
+      const task = await Task.findOne({ where: { id } });
+      if (!task) {
+        return res.status(404).json({ message: "Task not found" });
+      }
+      return res.status(200).json(task);
+    }
+
+    const results = await Task.findAll({ limit: 10 });
+    return res.status(200).json(results);
+  } catch (error) {
+    return res.status(500).json({ message: "Error:", error: error.message });
+  }
+}
+
+export async function getTaskById(req, res, next) {
+  const id = req.params.id || req.query.id;
+
+  if (!id) {
+    return res.status(400).json({ message: "Missing task id" });
+  }
+
+  try {
+    const result = await Task.findOne({ where: { id } });
+
+    if (!result) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ message: "Error:", error: error.message });
+  }
+>>>>>>> main
 }
 
 export async function addTask(req, res, next) {
