@@ -8,6 +8,7 @@ import {
     deleteComment,
     getCommentsForUserId,
     getCommentsForTaskId,
+    deleteCommentsForTaskId,
 } from '../controllers/commentsController.js';
 import { isAuth } from '../middleware/is-Auth.js';
 
@@ -35,6 +36,30 @@ const router = express.Router();
  *         description: Server error
  */
 router.get('/task/:taskId', isAuth, getCommentsForTaskId);
+
+/**
+ * @swagger
+ * /comments/task/{taskId}:
+ *   delete:
+ *     summary: Delete comments for a task
+ *     tags:
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The task ID
+ *     responses:
+ *       200:
+ *         description: Comments deleted successfully
+ *       400:
+ *         description: Invalid task ID
+ *       500:
+ *         description: Server error
+ */
+router.delete('/task/:taskId', isAuth, deleteCommentsForTaskId);
 
 /**
  * @swagger

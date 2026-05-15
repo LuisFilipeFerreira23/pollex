@@ -39,6 +39,26 @@ export async function getCommentsForTaskId(req, res, next) {
     }
 }
 
+export async function deleteCommentsForTaskId(req, res, next) {
+    try {
+        const { taskId } = req.params;
+        const parsedTaskId = Number(taskId);
+
+        if (Number.isNaN(parsedTaskId)) {
+            return res.status(400).json({ message: 'Invalid task id' });
+        }
+
+        const result = await Comment.deleteMany({ taskId: parsedTaskId });
+
+        return res.status(200).json({
+            message: 'Comments deleted successfully',
+            deletedCount: result.deletedCount ?? 0,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
+    }
+}
+
 export async function createComment(req, res, next) {
     try {
         const { content, taskId } = req.body;

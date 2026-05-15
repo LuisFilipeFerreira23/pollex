@@ -26,9 +26,11 @@ function getActorUserId(req) {
     return req.user?.id ? Number(req.user.id) : null;
 }
 
-async function fetchCommentsForTask(taskId) {
+async function fetchCommentsForTask(taskId, authorization) {
     try {
-        const response = await fetch(`${activityServiceUrl}/comments/task/${taskId}`);
+        const response = await fetch(`${activityServiceUrl}/comments/task/${taskId}`, {
+            headers: authorization ? { Authorization: authorization } : {},
+        });
 
         if (!response.ok) {
             return [];
@@ -39,6 +41,20 @@ async function fetchCommentsForTask(taskId) {
     } catch (error) {
         return [];
     }
+}
+
+async function deleteCommentsForTask(taskId, authorization) {
+    const response = await fetch(`${activityServiceUrl}/comments/task/${taskId}`, {
+        method: 'DELETE',
+        headers: authorization ? { Authorization: authorization } : {},
+    });
+
+    if (!response.ok) {
+        const errorPayload = await response.json().catch(() => ({}));
+        throw new Error(errorPayload.message || `Failed to delete comments for task ${taskId}`);
+    }
+
+    return response.json().catch(() => ({}));
 }
 
 async function recordTaskActivity({
@@ -104,7 +120,7 @@ export async function getTaskById(req, res, next) {
         }
 
         const [comments, activity] = await Promise.all([
-            fetchCommentsForTask(id),
+            fetchCommentsForTask(id, req.headers.authorization),
             TaskActivity.findAll({
                 where: { taskId: parseTaskId(id) },
                 order: [['createdAt', 'DESC']],
@@ -275,24 +291,19 @@ export async function getChartData(req, res) {
 export async function deleteTask(req, res, next) {
     const { id } = req.params;
     try {
-        const actorUserId = getActorUserId(req);
         const task = await Task.findByPk(id);
 
         if (!task) {
             return res.status(404).json({ message: 'Task not found' });
         }
 
-        await recordTaskActivity({
-            taskId: task.id,
-            actorUserId,
-            actionType: 'task_deleted',
-            oldValue: toPlain(task),
+        await deleteCommentsForTask(task.id, req.headers.authorization);
+
+        await Task.sequelize.transaction(async (transaction) => {
+            await TaskActivity.destroy({ where: { taskId: task.id }, transaction });
+            await Task.destroy({ where: { id }, transaction });
         });
 
-        const results = await Task.destroy({ where: { id: id } });
-        if (results === 0) {
-            return res.status(404).json({ message: 'Task not found' });
-        }
         return res.status(200).json({ message: 'Task deleted successfully' });
     } catch (error) {
         return res.status(500).json({ message: 'Error:', error: error.message });
