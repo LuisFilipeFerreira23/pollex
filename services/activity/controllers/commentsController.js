@@ -1,104 +1,141 @@
-import { Comment } from "../models/activity.js";
-import db from "../util/dbmanager.js";
-const { User } = db;
+import mongoose from 'mongoose';
+import { Comment } from '../models/comment.js';
 
-export function getCommentsForUserId(req, res, next) {
-  try {
-    const { userId } = req.params;
+function getActorUserId(req, fallbackUserId) {
+    return req.user?.id ? Number(req.user.id) : fallbackUserId ? Number(fallbackUserId) : null;
+}
 
-    const existsUser = User.findOne({ where: { id: userId } });
+export async function getCommentsForUserId(req, res, next) {
+    try {
+        const { userId } = req.params;
 
-    if (!existsUser) {
-      return res.status(404).json({ message: "User not found" });
+        const commentsExist = await Comment.find({ userId }).sort({ createdAt: -1 }).lean();
+
+        return res.status(200).json({
+            message: 'Comments retrieved successfully',
+            comments: commentsExist,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
+}
 
-    const commentsExist = Comment.findOne({ userId });
+export async function getCommentsForTaskId(req, res, next) {
+    try {
+        const { taskId } = req.params;
+        const limit = Number(req.query.limit || 20);
 
-    if (!commentsExist) {
-      return res.status(404).json({ message: "Comment not found" });
+        const comments = await Comment.find({ taskId: Number(taskId) })
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .lean();
+
+        return res.status(200).json({
+            message: 'Comments retrieved successfully',
+            comments,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
+}
 
-    return res.status(200).json({
-      message: "Comments retrieved successfully",
-      comment: commentsExist,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
-  }
+export async function deleteCommentsForTaskId(req, res, next) {
+    try {
+        const { taskId } = req.params;
+        const parsedTaskId = Number(taskId);
+
+        if (Number.isNaN(parsedTaskId)) {
+            return res.status(400).json({ message: 'Invalid task id' });
+        }
+
+        const result = await Comment.deleteMany({ taskId: parsedTaskId });
+
+        return res.status(200).json({
+            message: 'Comments deleted successfully',
+            deletedCount: result.deletedCount ?? 0,
+        });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
+    }
 }
 
 export async function createComment(req, res, next) {
-  try {
-    const { content, taskId, userId } = req.body;
+    try {
+        const { content, taskId } = req.body;
+        const userId = getActorUserId(req, req.body.userId);
 
-    const existsUser = User.findOne({ where: { id: userId } });
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
 
-    if (!existsUser) {
-      res.status(404).json({ message: "User not found" });
-      return;
+        const newComment = new Comment({
+            content,
+            taskId: Number(taskId),
+            userId,
+        });
+
+        await newComment.save();
+
+        return res.status(201).json({ message: 'Comment created successfully', comment: newComment });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
-
-    const newComment = new Comment({
-      content,
-      taskId,
-      userId,
-    });
-
-    await newComment.save();
-
-    return res
-      .status(201)
-      .json({ message: "Comment created successfully", comment: newComment });
-  } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
-  }
 }
 
 export async function editComment(req, res, next) {
-  try {
-    const { content, taskId, userId } = req.body;
-    const { id } = req.params;
+    try {
+        const { content, taskId } = req.body;
+        const { id } = req.params;
+        const userId = getActorUserId(req, req.body.userId);
 
-    const existsUser = await User.findOne({ where: { id: userId } });
-    if (!existsUser) {
-      return res.status(404).json({ message: "User not found" });
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: 'Invalid comment id. Use the MongoDB _id returned when the comment was created.',
+            });
+        }
+
+        const updatedUser = await Comment.findByIdAndUpdate(
+            id,
+            {
+                content,
+                taskId: Number(taskId),
+                userId,
+            },
+            { new: true, runValidators: true },
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        return res.status(201).json({ message: 'Comment updated successfully', comment: updatedUser });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
-
-    const updatedUser = await Comment.findByIdAndUpdate(
-      { _id: id },
-      {
-        content,
-        taskId,
-        userId,
-      }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({ message: "Comment not found" });
-    }
-
-    return res
-      .status(201)
-      .json({ message: "Comment updated successfully", comment: updatedUser });
-  } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
-  }
 }
 
-export function deleteComment(req, res, next) {
-  try {
-    const { id } = req.params;
+export async function deleteComment(req, res, next) {
+    try {
+        const { id } = req.params;
 
-    const updatedUser = Comment.findByIdAndUpdate({ _id: id });
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                message: 'Invalid comment id. Use the MongoDB _id returned when the comment was created.',
+            });
+        }
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "Comment not found" });
+        const updatedUser = await Comment.findByIdAndDelete(id);
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        return res.status(201).json({ message: 'Comment deleted successfully', comment: updatedUser });
+    } catch (error) {
+        return res.status(500).json({ message: 'Error:', error: error.message });
     }
-
-    return res
-      .status(201)
-      .json({ message: "Comment deleted successfully", comment: updatedUser });
-  } catch (error) {
-    return res.status(500).json({ message: "Error:", error: error.message });
-  }
 }

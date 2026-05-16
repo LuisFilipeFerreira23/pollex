@@ -1,17 +1,65 @@
 // Importa a função express
-import express from "express";
+import express from 'express';
 
 // Importa os controladores das configurações
 import {
-  createComment,
-  editComment,
-  deleteComment,
-  getCommentsForUserId,
-} from "../controllers/commentController.js";
-import { isAuth } from "../middleware/is-Auth.js";
+    createComment,
+    editComment,
+    deleteComment,
+    getCommentsForUserId,
+    getCommentsForTaskId,
+    deleteCommentsForTaskId,
+} from '../controllers/commentsController.js';
+import { isAuth } from '../middleware/is-Auth.js';
 
 // Cria um router usando o express Router
 const router = express.Router();
+
+/**
+ * @swagger
+ * /comments/task/{taskId}:
+ *   get:
+ *     summary: Get comments for a task
+ *     tags:
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The task ID
+ *     responses:
+ *       200:
+ *         description: Comments retrieved successfully
+ *       500:
+ *         description: Server error
+ */
+router.get('/task/:taskId', isAuth, getCommentsForTaskId);
+
+/**
+ * @swagger
+ * /comments/task/{taskId}:
+ *   delete:
+ *     summary: Delete comments for a task
+ *     tags:
+ *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The task ID
+ *     responses:
+ *       200:
+ *         description: Comments deleted successfully
+ *       400:
+ *         description: Invalid task ID
+ *       500:
+ *         description: Server error
+ */
+router.delete('/task/:taskId', isAuth, deleteCommentsForTaskId);
 
 /**
  * @swagger
@@ -35,7 +83,7 @@ const router = express.Router();
  *       500:
  *         description: Server error
  */
-router.get("/:userId", isAuth, getCommentsForUserId);
+router.get('/:userId', isAuth, getCommentsForUserId);
 
 /**
  * @swagger
@@ -69,15 +117,22 @@ router.get("/:userId", isAuth, getCommentsForUserId);
  *       500:
  *         description: Server error
  */
-router.post("/create", isAuth, createComment);
+router.post('/create', isAuth, createComment);
 
 /**
  * @swagger
- * /comments/edit:
+ * /comments/edit/{id}:
  *   put:
  *     summary: Edit an existing comment
  *     tags:
  *       - Comments
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The comment ID
  *     requestBody:
  *       required: true
  *       content:
@@ -90,8 +145,6 @@ router.post("/create", isAuth, createComment);
  *               - taskId
  *               - userId
  *             properties:
- *               _id:
- *                 type: string
  *               content:
  *                 type: string
  *               taskId:
@@ -102,11 +155,11 @@ router.post("/create", isAuth, createComment);
  *       201:
  *         description: Comment updated successfully
  *       404:
- *         description: User or comment not found
+ *         description: Comment not found
  *       500:
  *         description: Server error
  */
-router.put("/edit", isAuth, editComment);
+router.put('/edit/:id', isAuth, editComment);
 
 /**
  * @swagger
@@ -134,6 +187,6 @@ router.put("/edit", isAuth, editComment);
  *       500:
  *         description: Server error
  */
-router.delete("/delete/:id", isAuth, deleteComment);
+router.delete('/delete/:id', isAuth, deleteComment);
 
 export default router;
